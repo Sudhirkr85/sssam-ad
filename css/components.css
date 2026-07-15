@@ -1,0 +1,203 @@
+/* =========================================================
+   Admin Panel – Dark Mode Glassmorphism Components Extension
+   ========================================================= */
+
+/* ── Skeleton Loaders ── */
+.skeleton {
+  background: linear-gradient(90deg,
+    rgba(255,255,255,.04) 25%,
+    rgba(255,255,255,.08) 50%,
+    rgba(255,255,255,.04) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.8s infinite;
+  border-radius: 6px;
+  height: 14px;
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+/* ── Progress Spinner ── */
+.spinner {
+  width: 20px; height: 20px;
+  border: 2px solid rgba(255,255,255,.1);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Section Transition ── */
+.page-view {
+  animation: fadeIn .25s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Legacy Import Progress Bar ── */
+.progress-bar-wrap {
+  width: 100%;
+  height: 8px;
+  background: rgba(255,255,255,.05);
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 12px 0;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), #fbbf24);
+  border-radius: 999px;
+  transition: width .5s ease;
+  width: 0%;
+}
+
+/* ── Divider ── */
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 24px 0;
+}
+
+/* ── Status Dot ── */
+.dot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+  flex-shrink: 0;
+}
+
+.dot-green  { background: var(--green); box-shadow: 0 0 6px var(--green); }
+.dot-red    { background: var(--red);   box-shadow: 0 0 6px var(--red);   }
+.dot-amber  { background: var(--amber); box-shadow: 0 0 6px var(--amber); }
+.dot-blue   { background: #60a5fa;      box-shadow: 0 0 6px #60a5fa;      }
+.dot-purple { background: #c084fc;      box-shadow: 0 0 6px #c084fc;      }
+
+/* ── Info Grid (Detail View) ── */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.info-tile {
+  background: rgba(255,255,255,.03);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+}
+
+.info-tile-label {
+  font-size: .72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  margin-bottom: 6px;
+}
+
+.info-tile-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* ── Mobile Overlay ── */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.5);
+  z-index: 99;
+}
+
+.sidebar-overlay.open { display: block; }
+
+/* ── Hamburger Menu Button ── */
+.hamburger {
+  display: none;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-sub);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: var(--transition);
+}
+
+.hamburger:hover { color: var(--text-primary); border-color: rgba(255,255,255,.2); }
+
+@media (max-width: 900px) { .hamburger { display: flex; align-items: center; } }
+
+/* ── Empty State ── */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 72px 20px;
+  text-align: center;
+}
+
+.empty-state-icon { font-size: 3.5rem; margin-bottom: 16px; opacity: .35; }
+
+.empty-state-title {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.empty-state-sub {
+  font-size: .85rem;
+  color: var(--text-muted);
+  max-width: 340px;
+  line-height: 1.6;
+}
+
+/* ── Quick Confirm Inline Actions ── */
+.confirm-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: .78rem;
+  font-weight: 700;
+  color: var(--red);
+}
+
+.confirm-inline-btn {
+  padding: 3px 9px;
+  border-radius: 5px;
+  font-size: .75rem;
+  font-weight: 700;
+  border: 1px solid;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.confirm-yes {
+  background: rgba(239,68,68,.12);
+  border-color: rgba(239,68,68,.2);
+  color: var(--red);
+}
+
+.confirm-yes:hover { background: var(--red); color: #fff; }
+
+.confirm-no {
+  background: rgba(255,255,255,.04);
+  border-color: var(--border);
+  color: var(--text-muted);
+}
+
+.confirm-no:hover { background: rgba(255,255,255,.08); color: var(--text-primary); }
