@@ -493,7 +493,7 @@
           <button class="admin-nav-btn" data-panel="placements">Placements</button>
           <button class="admin-nav-btn" data-panel="blogs">Blogs &amp; Hiring</button>
           <button class="admin-nav-btn" data-panel="notes">Study Notes</button>
-          <button class="admin-nav-btn" data-panel="import">Legacy Import</button>
+          <button class="admin-nav-btn" data-panel="settings">General Settings</button>
         </nav>
         <button id="btnLogout" class="btn-secondary" style="margin-top: auto; width: 100%;">Logout</button>
       </aside>
@@ -719,22 +719,20 @@
           </table>
         </section>
 
-        <!-- PANEL: IMPORT -->
-        <section class="admin-panel-content" id="panel-import" style="display: none;">
-          <p style="color: #888; margin-bottom: 25px;">Bulk import legacy certification records from CSV.</p>
+
+        <!-- PANEL: SETTINGS -->
+        <section class="admin-panel-content" id="panel-settings" style="display: none;">
+          <p style="color: #888; margin-bottom: 25px;">Configure global platform and onboarding guidelines settings.</p>
           <div class="result-card" style="padding: 30px;">
-            <h3 style="color: #fff; margin-bottom: 15px;">Import Legacy CSV</h3>
-            <p style="color: #aaa; margin-bottom: 20px; font-size: 0.9rem;">
-              Format matches: <code>Student ID, Full Name, Email Address, Phone Number, Course Enrolled, Batch Type, Enrollment Date, Status</code>.<br>
-              Note: Only rows with status <strong>"Completed"</strong> will be imported as legacy certificates.
-            </p>
-            <div style="background: rgba(255,255,255,0.03); border: 2px dashed rgba(255,255,255,0.1); padding: 40px 20px; text-align: center; border-radius: 12px; margin-bottom: 20px;">
-              <span style="font-size: 2rem; display: block; margin-bottom: 10px;">📄</span>
-              <p style="color: #888; margin-bottom: 15px;">Please select the student records CSV file.</p>
-              <input type="file" id="csvFileInput" accept=".csv" style="display: none;" />
-              <button class="btn-primary" onclick="document.getElementById('csvFileInput').click()">Choose CSV File</button>
-            </div>
-            <button class="btn-secondary" id="btnUploadCsv" style="width: 100%;">Upload & Import Records</button>
+            <h3 style="color: #fff; margin-bottom: 20px;">Apply Process Video Guide</h3>
+            <form id="settingsForm">
+              <div class="form-field" style="margin-bottom: 20px;">
+                <label for="setGuideVideoUrl" style="color: #aaa; display: block; margin-bottom: 8px;">"How to Apply" Video Guide URL (Embed Link)</label>
+                <input type="url" id="setGuideVideoUrl" placeholder="e.g. https://www.youtube.com/embed/dQw4w9WgXcQ" style="width: 100%; padding: 10px 14px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; box-sizing: border-box;" required />
+                <small style="color: #666; display: block; margin-top: 5px;">Must be a valid YouTube/Vimeo embed URL.</small>
+              </div>
+              <button type="submit" class="btn-primary" style="width: 100%;">Save General Settings</button>
+            </form>
           </div>
         </section>
       </main>
@@ -856,6 +854,7 @@
             if (panelId === "panel-applications") loadApplications();
             if (panelId === "panel-certificates") loadCertificates();
             if (panelId === "panel-enquiries") loadEnquiries();
+            if (panelId === "panel-settings") loadSettings();
           });
         });
       });
@@ -1278,9 +1277,41 @@
             } catch (err) {
               showToast("Error", err.message, true);
             }
+        }
+
+        // Settings Form Submission
+        const settingsForm = document.getElementById("settingsForm");
+        if (settingsForm) {
+          settingsForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const val = document.getElementById("setGuideVideoUrl").value.trim();
+            try {
+              const res = await adminFetch("/api/admin/settings", {
+                method: "POST",
+                body: JSON.stringify({ key: "apply_guide_video_url", value: val })
+              });
+              const data = await res.json();
+              if (!res.ok) throw new Error(data.message || "Failed to save settings");
+              showToast("Success", "General settings saved successfully", false);
+            } catch (err) {
+              showToast("Error", err.message, true);
+            }
           });
         }
       });
+
+      // Load Settings from Backend API
+      window.loadSettings = async function() {
+        try {
+          const res = await fetch(`${window.APP_BASE_URL}/api/settings/apply_guide_video_url`);
+          if (res.ok) {
+            const data = await res.json();
+            document.getElementById("setGuideVideoUrl").value = data.value || "";
+          }
+        } catch (err) {
+          console.error("Failed to load settings:", err);
+        }
+      };
 
       function showToast(title, message, isError) {
         if (typeof window.Toastify === "function") {
