@@ -731,6 +731,22 @@
           <h3 id="noteModalTitle" class="font-outfit font-bold text-[#e0a730] text-lg light:text-[#204180]">Add Study Note PDF</h3>
           <span class="text-[1.8rem] cursor-pointer text-[#9ca3af] leading-none transition-colors hover:text-white light:hover:text-[#0f172a]" onclick="closeNoteModal()">&times;</span>
         </div>
+        <!-- Study Note AI Section -->
+        <div id="noteAISection" class="bg-[rgba(224,167,48,0.05)] p-[15px] rounded-lg mb-5 border border-[rgba(224,167,48,0.15)]">
+          <strong class="text-[#e0a730] block mb-1">🤖 Write Note Description with AI</strong>
+          <div class="flex gap-2.5">
+            <input type="text" id="aiNotePrompt" placeholder="Enter topic/category (e.g. Python OOPS Concepts, Advanced Excel)..." class="flex-1 bg-[rgba(0,0,0,0.2)] border border-[rgba(255,255,255,0.1)] p-2.5 rounded-md text-white outline-none" />
+            <button type="button" class="bg-[#e0a730] text-[#111] hover:bg-[#c99324] px-[18px] font-bold rounded-lg transition-all text-[0.9rem] light:bg-[#204180] light:text-white light:hover:bg-[#173266]" id="btnGenerateNoteAI" onclick="generateAINoteContent()">Generate</button>
+          </div>
+          <div class="mt-2.5 flex gap-2 flex-wrap items-center">
+            <span class="text-[0.78rem] text-[#888]">Quick notes:</span>
+            <button type="button" class="bg-[rgba(255,255,255,0.05)] text-[#d1d5db] border border-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.08)] hover:text-white text-[0.72rem] py-1 px-2 rounded" onclick="setNoteAIPrompt('Python Object Oriented Programming Basics')">Python OOPs</button>
+            <button type="button" class="bg-[rgba(255,255,255,0.05)] text-[#d1d5db] border border-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.08)] hover:text-white text-[0.72rem] py-1 px-2 rounded" onclick="setNoteAIPrompt('Advanced Microsoft Excel Formulas and Functions')">Advanced Excel</button>
+            <button type="button" class="bg-[rgba(255,255,255,0.05)] text-[#d1d5db] border border-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.08)] hover:text-white text-[0.72rem] py-1 px-2 rounded" onclick="setNoteAIPrompt('SQL Queries and Database Joins Tutorial')">SQL Joins</button>
+            <button type="button" class="bg-[rgba(255,255,255,0.05)] text-[#d1d5db] border border-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.08)] hover:text-white text-[0.72rem] py-1 px-2 rounded" onclick="setJobAIPrompt('HTML CSS and Responsive Web Design Fundamentals')">HTML/CSS Basics</button>
+          </div>
+        </div>
+
         <form id="noteForm" class="grid grid-cols-1 md:grid-cols-2 gap-[15px]">
           <input type="hidden" id="noteId" />
           <div class="flex flex-col gap-1.5">
@@ -771,6 +787,9 @@
         <div class="flex justify-between items-center mb-6 border-b border-[rgba(255,255,255,0.06)] pb-4 light:border-[rgba(0,0,0,0.08)]">
           <h3 class="font-outfit font-bold text-[#e0a730] text-lg light:text-[#204180]">Study Notes Download Leads</h3>
           <span class="text-[1.8rem] cursor-pointer text-[#9ca3af] leading-none transition-colors hover:text-white light:hover:text-[#0f172a]" onclick="closeNotesLeadsModal()">&times;</span>
+        </div>
+        <div class="mb-4">
+          <input type="text" id="noteLeadSearchInput" placeholder="Search by name, phone, email..." class="w-full p-[10px_14px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] rounded-lg text-white outline-none focus:border-[#e0a730] transition-colors font-sans light:bg-white light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" oninput="filterNoteLeads()" />
         </div>
         <div class="max-height: 400px; overflow-y: auto; w-full overflow-x-auto">
           <table class="w-full border-collapse mt-5 bg-[rgba(255,255,255,0.01)] rounded-xl overflow-hidden min-w-[700px]">

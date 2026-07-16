@@ -661,6 +661,11 @@ window.openAddNoteModal = function() {
   document.getElementById("noteModalTitle").textContent = "Add Study Note PDF";
   document.getElementById("noFile").required = true;
   document.getElementById("noFileInfo").textContent = "";
+  
+  // Show AI generator for new notes
+  const aiSection = document.getElementById("noteAISection");
+  if (aiSection) aiSection.style.display = "";
+
   document.getElementById("noteModal").style.display = "flex";
 };
 
@@ -670,6 +675,10 @@ window.openEditNoteModal = function(itemJsonStr) {
   document.getElementById("noteId").value = item._id;
   document.getElementById("noteModalTitle").textContent = "Edit Study Note";
   
+  // Hide AI generator for edit mode
+  const aiSection = document.getElementById("noteAISection");
+  if (aiSection) aiSection.style.display = "none";
+
   document.getElementById("noTitle").value = item.title;
   document.getElementById("noCategory").value = item.category;
   document.getElementById("noDescription").value = item.description;
@@ -679,6 +688,56 @@ window.openEditNoteModal = function(itemJsonStr) {
   document.getElementById("noFileInfo").textContent = "Leave empty to retain existing PDF.";
 
   document.getElementById("noteModal").style.display = "flex";
+};
+
+window.setNoteAIPrompt = function(val) {
+  document.getElementById("aiNotePrompt").value = val;
+};
+
+window.generateAINoteContent = async function() {
+  const prompt = document.getElementById("aiNotePrompt").value.trim();
+  if (!prompt) {
+    alert("Please enter a study topic.");
+    return;
+  }
+
+  const btn = document.getElementById("btnGenerateNoteAI");
+  btn.disabled = true;
+  btn.textContent = "Writing...";
+
+  try {
+    const aiPrompt = `Generate study note description details for the topic: "${prompt}". Respond ONLY with a JSON object containing the fields: "title" (Clear descriptive chapter title), "category" (A single word topic e.g. Python, Excel, SQL, ML, Web3), and "description" (A clear 3-4 sentence summary details of what the student will learn from this study note PDF).`;
+    const res = await s3AdminFetch("/api/admin/blogs/generate-ai", {
+      method: "POST",
+      body: JSON.stringify({ prompt: aiPrompt })
+    });
+
+    const raw = await res.text();
+    let title = prompt, category = "IT", description = "";
+
+    try {
+      const scrubbed = raw.replace(/\\(?!["\\\/bfnrtu])/g, "\\\\");
+      const data = JSON.parse(scrubbed);
+      if (!res.ok) throw new Error(data.message || "Failed to generate note content.");
+      title = data.title || prompt;
+      category = data.category || "IT";
+      description = data.description || "";
+    } catch (_) {
+      // Fallback plain text
+      description = raw;
+    }
+
+    document.getElementById("noTitle").value = title;
+    document.getElementById("noCategory").value = category;
+    document.getElementById("noDescription").value = description;
+
+    showToast("AI Notes Writer", "Study note description generated successfully!", false);
+  } catch (err) {
+    showToast("AI Notes Error", err.message, true);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Generate";
+  }
 };
 
 window.closeNoteModal = function() {
@@ -717,32 +776,66 @@ window.openNotesLeadsModal = async function() {
   const tbody = document.getElementById("notesLeadsTableBody");
   tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #888;">Loading download leads...</td></tr>`;
   document.getElementById("notesLeadsModal").style.display = "flex";
+  
+  // Clear any existing search query when opening
+  const searchInput = document.getElementById("noteLeadSearchInput");
+  if (searchInput) searchInput.value = "";
 
   try {
     const res = await s3AdminFetch("/api/admin/enquiries?limit=200");
     const data = await res.json();
     const list = data.data || data;
 
-    // Filter leads specifically from study notes downloads
-    const notesLeads = list.filter(e => e.message && e.message.includes("STUDY NOTES"));
+    // Filter leads specifically from study notes downloads and sort newest first (createdAt descending)
+    const notesLeads = list
+      .filter(e => e.message && e.message.includes("STUDY NOTES"))
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-    if (notesLeads.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #888;">No download leads captured yet.</td></tr>`;
-      return;
-    }
+    // Cache the leads list globally for dynamic search
+    window.currentNotesLeads = notesLeads;
 
-    tbody.innerHTML = notesLeads.map(e => `
-      <tr>
-        <td><strong>${e.fullName}</strong></td>
-        <td>${e.phoneNumber}</td>
-        <td>${e.email || '—'}</td>
-        <td><small style="color: #aaa;">${e.message.replace("[LEAD FROM STUDY NOTES] Downloaded file: ", "")}</small></td>
-        <td>${new Date(e.createdAt).toLocaleDateString()}</td>
-      </tr>
-    `).join("");
+    renderNoteLeads(notesLeads);
   } catch (err) {
     tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #ef5350;">Failed to load leads: ${err.message}</td></tr>`;
   }
+};
+
+function renderNoteLeads(leads) {
+  const tbody = document.getElementById("notesLeadsTableBody");
+  if (!leads || leads.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #888;">No matching download leads found.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = leads.map(e => `
+    <tr>
+      <td><strong>${e.fullName}</strong></td>
+      <td>${e.phoneNumber}</td>
+      <td>${e.email || '—'}</td>
+      <td><small style="color: #aaa;">${e.message.replace("[LEAD FROM STUDY NOTES] Downloaded file: ", "")}</small></td>
+      <td>${new Date(e.createdAt).toLocaleDateString("en-IN", { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' })}</td>
+    </tr>
+  `).join("");
+}
+
+window.filterNoteLeads = function() {
+  const query = document.getElementById("noteLeadSearchInput").value.toLowerCase().trim();
+  const leads = window.currentNotesLeads || [];
+  
+  if (!query) {
+    renderNoteLeads(leads);
+    return;
+  }
+
+  const filtered = leads.filter(e => {
+    const name = (e.fullName || "").toLowerCase();
+    const phone = (e.phoneNumber || "").toLowerCase();
+    const email = (e.email || "").toLowerCase();
+    const topic = (e.message || "").toLowerCase();
+    return name.includes(query) || phone.includes(query) || email.includes(query) || topic.includes(query);
+  });
+
+  renderNoteLeads(filtered);
 };
 
 window.closeNotesLeadsModal = function() {
