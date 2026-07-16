@@ -114,6 +114,11 @@ document.addEventListener("DOMContentLoaded", () => {
       if (panelId === "panel-certificates") loadCertificates();
       if (panelId === "panel-enquiries") loadEnquiries();
       if (panelId === "panel-settings") loadSettings();
+
+      // Close sidebar on mobile after clicking link
+      if (window.innerWidth < 1024) {
+        toggleSidebar();
+      }
     });
   });
 });
@@ -583,7 +588,19 @@ function showToast(title, message, isError) {
       style: {
         borderRadius: "8px",
         background: isError ? "linear-gradient(135deg, #e94c4c, #b83434)" : "linear-gradient(135deg, #1f9d53, #15753d)"
-      }
-    }).showToast();
-  }
 }
+
+window.toggleSidebar = function() {
+  const sidebar = document.getElementById("adminSidebar");
+  const overlay = document.getElementById("sidebarOverlay");
+  
+  if (sidebar.classList.contains("-translate-x-full")) {
+    sidebar.classList.remove("-translate-x-full");
+    sidebar.classList.add("translate-x-0");
+    overlay.classList.remove("hidden");
+  } else {
+    sidebar.classList.remove("translate-x-0");
+    sidebar.classList.add("-translate-x-full");
+    overlay.classList.add("hidden");
+  }
+};

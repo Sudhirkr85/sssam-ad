@@ -139,9 +139,15 @@
 
     <!-- MAIN DASHBOARD -->
     <div id="dashboardScreen" class="flex min-h-screen bg-[#0b0f19] light:bg-[#f8fafc]" style="display: none;">
+      <!-- Sidebar Overlay for mobile -->
+      <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden" onclick="toggleSidebar()"></div>
+
       <!-- Sidebar -->
-      <aside class="w-[260px] bg-[#111827] border-r border-[rgba(255,255,255,0.06)] p-[30px_20px] flex flex-col gap-[25px] light:bg-white light:border-[rgba(0,0,0,0.08)]">
-        <div class="font-outfit font-extrabold text-2xl text-[#e0a730] text-center mb-5 light:text-[#204180]">SSSAM Admin</div>
+      <aside id="adminSidebar" class="fixed inset-y-0 left-0 z-50 w-[260px] bg-[#111827] border-r border-[rgba(255,255,255,0.06)] p-[30px_20px] flex flex-col gap-[25px] light:bg-white light:border-[rgba(0,0,0,0.08)] transform -translate-x-full lg:translate-x-0 lg:static transition-transform duration-300 ease-in-out">
+        <div class="flex items-center justify-between mb-5 lg:mb-0">
+          <div class="font-outfit font-extrabold text-2xl text-[#e0a730] text-center w-full light:text-[#204180]">SSSAM Admin</div>
+          <button class="lg:hidden text-[#9ca3af] hover:text-white light:text-[#475569] light:hover:text-[#0f172a] text-3xl focus:outline-none leading-none" onclick="toggleSidebar()">&times;</button>
+        </div>
         <nav class="flex flex-col gap-2">
           <button class="admin-nav-btn active" data-panel="applications">Applications</button>
           <button class="admin-nav-btn" data-panel="certificates">Certificates</button>
@@ -157,7 +163,12 @@
       <!-- Main Content -->
       <main class="flex-1 p-10 overflow-y-auto">
         <div class="flex justify-between items-center mb-10 border-b border-[rgba(255,255,255,0.06)] pb-5 light:border-[rgba(0,0,0,0.08)]">
-          <h1 id="panelTitle" class="font-outfit text-[1.8rem] font-extrabold text-white m-0 light:text-[#0f172a]">Manage Applications</h1>
+          <div class="flex items-center">
+            <button id="menuToggleBtn" class="lg:hidden text-white light:text-[#0f172a] hover:text-[#e0a730] light:hover:text-[#204180] text-2xl mr-4 focus:outline-none" onclick="toggleSidebar()">
+              ☰
+            </button>
+            <h1 id="panelTitle" class="font-outfit text-[1.8rem] font-extrabold text-white m-0 light:text-[#0f172a]">Manage Applications</h1>
+          </div>
         </div>
 
         <!-- STATS KPI COUNTERS -->
