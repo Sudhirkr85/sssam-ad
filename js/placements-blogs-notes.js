@@ -11,6 +11,7 @@ function initPlacementsBlogsNotes() {
       const panel = btn.getAttribute("data-panel");
       if (panel === "placements") loadPlacements();
       if (panel === "blogs") loadBlogs();
+      if (panel === "hiring") loadHiring();
       if (panel === "notes") loadNotes();
     });
   });
@@ -23,6 +24,7 @@ function initPlacementsBlogsNotes() {
 window.loadPlacements = loadPlacements;
 window.togglePlacementStatus = togglePlacementStatus;
 window.loadBlogs = loadBlogs;
+window.loadHiring = loadHiring;
 window.toggleBlogStatus = toggleBlogStatus;
 window.loadNotes = loadNotes;
 window.toggleNoteStatus = toggleNoteStatus;
@@ -175,16 +177,17 @@ async function loadBlogs() {
   try {
     const res = await s3AdminFetch("/api/admin/blogs");
     const list = await res.json();
+    const blogs = (list || []).filter(item => item.type !== "Hiring");
 
-    if (!list || list.length === 0) {
+    if (!blogs || blogs.length === 0) {
       tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #888;">No blog posts found.</td></tr>`;
       return;
     }
 
-    tbody.innerHTML = list.map(item => `
+    tbody.innerHTML = blogs.map(item => `
       <tr>
         <td><strong>${item.title}</strong><br/><small style="color: #666;">/${item.slug}</small></td>
-        <td><span class="action-badge" style="background: rgba(32,120,240,0.15); color: #3b82f6;">${item.type}</span></td>
+        <td>${(item.tags || []).slice(0,3).map(t => `<span class="action-badge" style="background:rgba(59,130,246,0.12);color:#3b82f6;width:auto;padding:2px 8px;margin:2px;">${t}</span>`).join("") || '<span style="color:#555;">—</span>'}</td>
         <td>${item.author}</td>
         <td><span style="color: ${item.status === 'Published' ? '#10b981' : '#e0a730'}; font-weight: 600;">${item.status}</span></td>
         <td>
@@ -204,12 +207,94 @@ async function loadBlogs() {
   }
 }
 
-window.openAddBlogModal = function() {
+async function loadHiring() {
+  const tbody = document.getElementById("hiringTableBody");
+  tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #888;">Loading hiring posts...</td></tr>`;
+
+  try {
+    const res = await s3AdminFetch("/api/admin/blogs");
+    const list = await res.json();
+    const hiring = (list || []).filter(item => item.type === "Hiring");
+
+    if (!hiring || hiring.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #888;">No hiring posts found.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = hiring.map(item => {
+      const source = item.hiringDetails?.source || "external";
+      const sourceBadge = source === "own"
+        ? `<span style="background:rgba(224,167,48,0.15);color:#e0a730;" class="action-badge">Own</span>`
+        : `<span style="background:rgba(59,130,246,0.12);color:#3b82f6;" class="action-badge">External</span>`;
+      const company = source === "own" ? "SSSAM Academy" : (item.hiringDetails?.company || "—");
+      return `
+        <tr>
+          <td><strong>${item.title}</strong><br/><small style="color:#666;">/${item.slug}</small></td>
+          <td>${sourceBadge}</td>
+          <td>${company}</td>
+          <td><span style="color: ${item.status === 'Published' ? '#10b981' : '#e0a730'}; font-weight: 600;">${item.status}</span></td>
+          <td>
+            <label class="switch-container">
+              <input type="checkbox" ${item.active ? 'checked' : ''} onchange="toggleBlogStatus('${item._id}', this.checked)" />
+              <span style="font-size: 0.8rem; margin-left: 5px; color: ${item.active ? '#10b981' : '#888'};">${item.active ? 'Visible' : 'Hidden'}</span>
+            </label>
+          </td>
+          <td>
+            <span class="action-badge badge-edit" onclick="openEditBlogModal('${encodeURIComponent(JSON.stringify(item))}')">Edit</span>
+            <span class="action-badge badge-reject" onclick="deleteBlog('${item._id}')">Delete</span>
+          </td>
+        </tr>
+      `;
+    }).join("");
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #ef5350;">Failed to load hiring posts: ${err.message}</td></tr>`;
+  }
+}
+
+window.openAddBlogModal = function(type = "Blog") {
   document.getElementById("blogForm").reset();
   document.getElementById("blogId").value = "";
-  document.getElementById("blogModalTitle").textContent = "Create Blog / Hiring Post";
   document.getElementById("blogImageInfo").textContent = "";
-  document.getElementById("hiringFields").style.display = "none";
+  document.getElementById("blogType").value = type;
+
+  const isHiring = type === "Hiring";
+
+  // Modal title
+  document.getElementById("blogModalTitle").textContent = isHiring ? "Post a Hiring Job" : "Create Blog Post";
+
+  // Save button text
+  const saveBtn = document.querySelector("#blogForm button[type='submit']");
+  if (saveBtn) saveBtn.textContent = isHiring ? "Post Job" : "Save Post";
+
+  // AI Section — toggle based on type
+  const aiSection = document.getElementById("blogAISection");
+  const hiringAISection = document.getElementById("hiringAISection");
+  if (aiSection) aiSection.style.display = isHiring ? "none" : "";
+  if (hiringAISection) hiringAISection.style.display = isHiring ? "" : "none";
+
+  // Dynamic labels
+  document.getElementById("lbl-title").textContent    = isHiring ? "Job Title *"                          : "Title *";
+  document.getElementById("lbl-slug").textContent     = isHiring ? "Job URL Slug *"                       : "Slug (SEO URL Part) *";
+  document.getElementById("lbl-summary").textContent  = isHiring ? "Job Short Description *"              : "Meta Summary * (Short SEO description)";
+  document.getElementById("lbl-content").textContent  = isHiring ? "Full Job Description (HTML allowed) *": "Blog Content (HTML allowed) *";
+
+  // Dynamic placeholders
+  document.getElementById("blogTitle").placeholder   = isHiring ? "e.g. React Developer — Internship"    : "e.g. Why Node.js is great for backend";
+  document.getElementById("blogSlug").placeholder    = isHiring ? "e.g. react-developer-internship-2026" : "e.g. why-nodejs-is-great";
+  document.getElementById("blogSummary").placeholder = isHiring ? "Brief about the role, skills needed…" : "Short SEO description of the blog…";
+  document.getElementById("blogContent").placeholder = isHiring
+    ? "Eligibility, responsibilities, salary, how to apply…"
+    : "Full blog content here (HTML tags allowed)…";
+
+  // Hiring-specific fields
+  if (isHiring) {
+    document.getElementById("hiringFields").style.display = "grid";
+    document.getElementById("hirSource").value = "own";
+    toggleHiringSource();
+  } else {
+    document.getElementById("hiringFields").style.display = "none";
+  }
+
   document.getElementById("blogModal").style.display = "flex";
 };
 
@@ -254,6 +339,21 @@ window.toggleHiringFields = function() {
   document.getElementById("hiringFields").style.display = type === "Hiring" ? "grid" : "none";
 };
 
+window.toggleHiringSource = function() {
+  const source = document.getElementById("hirSource").value;
+  const note = document.getElementById("hirSourceNote");
+  const companyField = document.getElementById("hirCompanyField");
+  if (source === "own") {
+    note.textContent = "Posting job for SSSAM Academy itself (trainer, intern, developer, etc.)";
+    companyField.style.display = "none";
+    document.getElementById("hirCompany").value = "SSSAM Academy";
+  } else {
+    note.textContent = "Job posted from an external/partner company.";
+    companyField.style.display = "";
+    document.getElementById("hirCompany").value = "";
+  }
+};
+
 window.autoGenerateSlug = function() {
   const isEditing = document.getElementById("blogId").value !== "";
   // Only auto-generate if we are creating a new post
@@ -290,6 +390,9 @@ window.generateAIContent = async function() {
     document.getElementById("blogTitle").value = data.title;
     document.getElementById("blogSummary").value = data.summary;
     document.getElementById("blogContent").value = data.content;
+    if (data.tags && Array.isArray(data.tags)) {
+      document.getElementById("blogTags").value = data.tags.join(", ");
+    }
     
     // Auto-generate slug
     autoGenerateSlug();
@@ -297,6 +400,121 @@ window.generateAIContent = async function() {
     showToast("AI Writer", "Blog post content generated successfully!", false);
   } catch (err) {
     showToast("AI Writer Error", err.message, true);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Generate";
+  }
+};
+
+window.generateAITags = async function() {
+  const title = document.getElementById("blogTitle").value.trim();
+  const summary = document.getElementById("blogSummary").value.trim();
+  const content = document.getElementById("blogContent").value.trim();
+
+  if (!title && !content) {
+    alert("Please write some title or content first before generating tags.");
+    return;
+  }
+
+  const btn = document.getElementById("btnGenerateTags");
+  btn.disabled = true;
+  btn.textContent = "Generating...";
+
+  try {
+    const prompt = `Generate 5-8 relevant SEO tags for a blog post. Title: "${title}". Summary: "${summary.slice(0, 200)}". Return ONLY a comma-separated list of lowercase tags, no explanation.`;
+    const res = await s3AdminFetch("/api/admin/blogs/generate-ai", {
+      method: "POST",
+      body: JSON.stringify({ prompt, tagsOnly: true })
+    });
+
+    // API may return JSON or plain text — handle both safely
+    const raw = await res.text();
+    let rawTags = "";
+
+    try {
+      const data = JSON.parse(raw);
+      if (!res.ok) throw new Error(data.message || "Failed to generate tags.");
+      rawTags = data.tags || data.content || data.title || "";
+    } catch (_) {
+      // Response was plain text (AI returned tags directly)
+      rawTags = raw;
+    }
+
+    const cleanTags = rawTags
+      .replace(/[*#`"']/g, "")
+      .replace(/\n/g, ",")
+      .split(",")
+      .map(t => t.trim().toLowerCase())
+      .filter(t => t.length > 0 && t.length < 40)
+      .slice(0, 8)
+      .join(", ");
+
+    document.getElementById("blogTags").value = cleanTags;
+    showToast("AI Tags", "Tags generated successfully!", false);
+  } catch (err) {
+    showToast("AI Tags Error", err.message, true);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "🤖 AI Tags";
+  }
+};
+
+window.setJobAIPrompt = function(val) {
+  document.getElementById("aiJobPrompt").value = val;
+};
+
+window.generateAIJobContent = async function() {
+  const role = document.getElementById("aiJobPrompt").value.trim();
+  if (!role) {
+    alert("Please enter a job role to generate description.");
+    return;
+  }
+
+  const btn = document.getElementById("btnGenerateJobAI");
+  btn.disabled = true;
+  btn.textContent = "Writing...";
+
+  try {
+    const prompt = `Write a professional job posting for the role: "${role}". Include:
+1. Job Title
+2. Short job summary (2-3 lines)
+3. Key Responsibilities (bullet points)
+4. Required Skills & Qualifications
+5. What we offer
+Format it cleanly in HTML using <h3>, <ul>, <li>, <p> tags. Keep it concise and professional.`;
+
+    const res = await s3AdminFetch("/api/admin/blogs/generate-ai", {
+      method: "POST",
+      body: JSON.stringify({ prompt })
+    });
+
+    const raw = await res.text();
+    let title = role, summary = "", content = "";
+
+    try {
+      const data = JSON.parse(raw);
+      if (!res.ok) throw new Error(data.message || "Failed to generate job content.");
+      title   = data.title   || role;
+      summary = data.summary || "";
+      content = data.content || "";
+    } catch (_) {
+      // Plain text response — use as content directly
+      content = raw;
+      summary = `We are looking for a skilled ${role} to join our team.`;
+    }
+
+    document.getElementById("blogTitle").value   = title;
+    document.getElementById("blogSummary").value = summary;
+    document.getElementById("blogContent").value = content;
+    autoGenerateSlug();
+
+    // Also auto-fill the role field in hiring details if empty
+    const hirRole = document.getElementById("hirRole");
+    if (hirRole && !hirRole.value) hirRole.value = role;
+
+    showToast("AI Job Writer", "Job description generated successfully!", false);
+  } catch (err) {
+    showToast("AI Job Error", err.message, true);
   } finally {
     btn.disabled = false;
     btn.textContent = "Generate";
@@ -314,18 +532,21 @@ async function toggleBlogStatus(id, checked) {
     if (!res.ok) throw new Error("Status update failed");
     showToast("Success", "Publication visibility toggled.", false);
     loadBlogs();
+    // Also refresh hiring if that panel exists
+    if (document.getElementById("hiringTableBody")) loadHiring();
   } catch (e) {
     showToast("Error", e.message, true);
   }
 }
 
 window.deleteBlog = async function(id) {
-  if (!await confirm("Are you sure you want to delete this blog post?")) return;
+  if (!await confirm("Are you sure you want to delete this post?")) return;
   try {
     const res = await s3AdminFetch(`/api/admin/blogs/${id}`, { method: "DELETE" });
     if (!res.ok) throw new Error("Delete failed");
-    showToast("Success", "Blog post deleted successfully.", false);
+    showToast("Success", "Post deleted successfully.", false);
     loadBlogs();
+    if (document.getElementById("hiringTableBody")) loadHiring();
   } catch (e) {
     showToast("Error", e.message, true);
   }
@@ -527,7 +748,9 @@ function setupFormSubmissions() {
     formData.append("tags", document.getElementById("blogTags").value.trim());
 
     if (document.getElementById("blogType").value === "Hiring") {
-      formData.append("company", document.getElementById("hirCompany").value.trim());
+      const source = document.getElementById("hirSource").value;
+      formData.append("hiringSource", source);
+      formData.append("company", source === "own" ? "SSSAM Academy" : document.getElementById("hirCompany").value.trim());
       formData.append("role", document.getElementById("hirRole").value.trim());
       formData.append("location", document.getElementById("hirLocation").value.trim());
       formData.append("applyLink", document.getElementById("hirApplyLink").value.trim());

@@ -153,7 +153,8 @@
           <button class="admin-nav-btn" data-panel="certificates">Certificates</button>
           <button class="admin-nav-btn" data-panel="enquiries">Enquiries</button>
           <button class="admin-nav-btn" data-panel="placements">Placements</button>
-          <button class="admin-nav-btn" data-panel="blogs">Blogs &amp; Hiring</button>
+          <button class="admin-nav-btn" data-panel="blogs">Blogs</button>
+          <button class="admin-nav-btn" data-panel="hiring">Hiring</button>
           <button class="admin-nav-btn" data-panel="notes">Study Notes</button>
           <button class="admin-nav-btn" data-panel="settings">General Settings</button>
         </nav>
@@ -175,23 +176,14 @@
         </div>
 
         <!-- STATS KPI COUNTERS -->
-        <div class="grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-3 mb-5" id="statsGrid">
-          <div class="bg-[#111827] border border-[rgba(255,255,255,0.06)] rounded-lg p-[12px_16px] flex flex-col gap-1 shadow-[0_4px_12px_rgba(0,0,0,0.15)] light:bg-white light:border-[rgba(0,0,0,0.08)] light:shadow-[0_4px_12px_rgba(0,0,0,0.03)]">
-            <span class="text-[0.78rem] text-[#9ca3af] font-semibold light:text-[#64748b]">Total Applications</span>
-            <span class="text-[1.35rem] font-bold font-outfit text-[#e0a730] light:text-[#204180]" id="stat-total">-</span>
-          </div>
-          <div class="bg-[#111827] border border-[rgba(255,255,255,0.06)] rounded-lg p-[12px_16px] flex flex-col gap-1 shadow-[0_4px_12px_rgba(0,0,0,0.15)] light:bg-white light:border-[rgba(0,0,0,0.08)] light:shadow-[0_4px_12px_rgba(0,0,0,0.03)]">
-            <span class="text-[0.78rem] text-[#9ca3af] font-semibold light:text-[#64748b]">Pending Approval</span>
-            <span class="text-[1.35rem] font-bold font-outfit text-[#e0a730] light:text-[#204180]" id="stat-pending">-</span>
-          </div>
-          <div class="bg-[#111827] border border-[rgba(255,255,255,0.06)] rounded-lg p-[12px_16px] flex flex-col gap-1 shadow-[0_4px_12px_rgba(0,0,0,0.15)] light:bg-white light:border-[rgba(0,0,0,0.08)] light:shadow-[0_4px_12px_rgba(0,0,0,0.03)]">
-            <span class="text-[0.78rem] text-[#9ca3af] font-semibold light:text-[#64748b]">Approved Certificates</span>
-            <span class="text-[1.35rem] font-bold font-outfit text-[#e0a730] light:text-[#204180]" id="stat-approved">-</span>
-          </div>
-          <div class="bg-[#111827] border border-[rgba(255,255,255,0.06)] rounded-lg p-[12px_16px] flex flex-col gap-1 shadow-[0_4px_12px_rgba(0,0,0,0.15)] light:bg-white light:border-[rgba(0,0,0,0.08)] light:shadow-[0_4px_12px_rgba(0,0,0,0.03)]">
-            <span class="text-[0.78rem] text-[#9ca3af] font-semibold light:text-[#64748b]">Total Enquiries</span>
-            <span class="text-[1.35rem] font-bold font-outfit text-[#e0a730] light:text-[#204180]" id="stat-enquiries">-</span>
-          </div>
+        <div class="flex flex-wrap items-center gap-x-5 gap-y-2 mb-5 text-[0.88rem] text-[#9ca3af] light:text-[#64748b]" id="statsGrid">
+          <span>Total Applications: <strong class="text-[#e0a730] light:text-[#204180]" id="stat-total">-</strong></span>
+          <span class="opacity-30">|</span>
+          <span>Pending: <strong class="text-[#e0a730] light:text-[#204180]" id="stat-pending">-</strong></span>
+          <span class="opacity-30">|</span>
+          <span>Certs Approved: <strong class="text-[#e0a730] light:text-[#204180]" id="stat-approved">-</strong></span>
+          <span class="opacity-30">|</span>
+          <span>Enquiries: <strong class="text-[#e0a730] light:text-[#204180]" id="stat-enquiries">-</strong></span>
         </div>
 
         <!-- PANEL: APPLICATIONS -->
@@ -210,24 +202,26 @@
               </select>
             </div>
           </div>
-          <table class="w-full border-collapse mt-5 bg-[rgba(255,255,255,0.01)] rounded-xl overflow-hidden">
-            <thead>
-              <tr class="border-b border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.03)] text-[#e0a730] font-semibold light:border-[rgba(0,0,0,0.06)] light:bg-[#f1f5f9] light:text-[#204180]">
-                <th class="p-[14px_20px] text-left">App ID</th>
-                <th class="p-[14px_20px] text-left">Name</th>
-                <th class="p-[14px_20px] text-left">Course</th>
-                <th class="p-[14px_20px] text-left">Type</th>
-                <th class="p-[14px_20px] text-left">Phone</th>
-                <th class="p-[14px_20px] text-left">Status</th>
-                <th class="p-[14px_20px] text-left">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="applicationsTableBody" class="text-[#d1d5db] text-[0.92rem] light:text-[#334155]">
-              <tr>
-                <td colspan="7" class="p-[14px_20px] text-center text-[#666] border-b border-[rgba(255,255,255,0.05)] light:border-[rgba(0,0,0,0.06)]">Loading applications...</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="overflow-x-auto w-full">
+            <table class="w-full border-collapse mt-5 bg-[rgba(255,255,255,0.01)] rounded-xl overflow-hidden min-w-[750px]">
+              <thead>
+                <tr class="border-b border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.03)] text-[#e0a730] font-semibold light:border-[rgba(0,0,0,0.06)] light:bg-[#f1f5f9] light:text-[#204180]">
+                  <th class="p-[14px_20px] text-left">App ID</th>
+                  <th class="p-[14px_20px] text-left">Name</th>
+                  <th class="p-[14px_20px] text-left">Course</th>
+                  <th class="p-[14px_20px] text-left">Type</th>
+                  <th class="p-[14px_20px] text-left">Phone</th>
+                  <th class="p-[14px_20px] text-left">Status</th>
+                  <th class="p-[14px_20px] text-left">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="applicationsTableBody" class="text-[#d1d5db] text-[0.92rem] light:text-[#334155]">
+                <tr>
+                  <td colspan="7" class="p-[14px_20px] text-center text-[#666] border-b border-[rgba(255,255,255,0.05)] light:border-[rgba(0,0,0,0.06)]">Loading applications...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
           <div class="pagination-container flex justify-between items-center mt-5 text-[0.88rem] text-[#9ca3af]" id="appPagination">
             <span id="appPaginationInfo">Showing page 1 of 1</span>
             <div class="flex gap-2">
@@ -245,23 +239,25 @@
               <input type="text" id="certSearchInput" class="w-full p-[10px_14px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] rounded-lg text-white outline-none focus:border-[#e0a730] transition-colors font-sans light:bg-white light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" placeholder="Search by name, certificate number, course..." oninput="filterCertificates()" />
             </div>
           </div>
-          <table class="w-full border-collapse mt-5 bg-[rgba(255,255,255,0.01)] rounded-xl overflow-hidden">
-            <thead>
-              <tr class="border-b border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.03)] text-[#e0a730] font-semibold light:border-[rgba(0,0,0,0.06)] light:bg-[#f1f5f9] light:text-[#204180]">
-                <th class="p-[14px_20px] text-left">Cert Number</th>
-                <th class="p-[14px_20px] text-left">Name</th>
-                <th class="p-[14px_20px] text-left">Course</th>
-                <th class="p-[14px_20px] text-left">Issue Date</th>
-                <th class="p-[14px_20px] text-left">Status</th>
-                <th class="p-[14px_20px] text-left">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="certificatesTableBody" class="text-[#d1d5db] text-[0.92rem] light:text-[#334155]">
-              <tr>
-                <td colspan="6" class="p-[14px_20px] text-center text-[#666] border-b border-[rgba(255,255,255,0.05)] light:border-[rgba(0,0,0,0.06)]">Loading certificates...</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="overflow-x-auto w-full">
+            <table class="w-full border-collapse mt-5 bg-[rgba(255,255,255,0.01)] rounded-xl overflow-hidden min-w-[750px]">
+              <thead>
+                <tr class="border-b border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.03)] text-[#e0a730] font-semibold light:border-[rgba(0,0,0,0.06)] light:bg-[#f1f5f9] light:text-[#204180]">
+                  <th class="p-[14px_20px] text-left">Cert Number</th>
+                  <th class="p-[14px_20px] text-left">Name</th>
+                  <th class="p-[14px_20px] text-left">Course</th>
+                  <th class="p-[14px_20px] text-left">Issue Date</th>
+                  <th class="p-[14px_20px] text-left">Status</th>
+                  <th class="p-[14px_20px] text-left">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="certificatesTableBody" class="text-[#d1d5db] text-[0.92rem] light:text-[#334155]">
+                <tr>
+                  <td colspan="6" class="p-[14px_20px] text-center text-[#666] border-b border-[rgba(255,255,255,0.05)] light:border-[rgba(0,0,0,0.06)]">Loading certificates...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
           <div class="pagination-container flex justify-between items-center mt-5 text-[0.88rem] text-[#9ca3af]" id="certPagination">
             <span id="certPaginationInfo">Showing page 1 of 1</span>
             <div class="flex gap-2">
@@ -287,22 +283,24 @@
               </select>
             </div>
           </div>
-          <table class="w-full border-collapse mt-5 bg-[rgba(255,255,255,0.01)] rounded-xl overflow-hidden">
-            <thead>
-              <tr class="border-b border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.03)] text-[#e0a730] font-semibold light:border-[rgba(0,0,0,0.06)] light:bg-[#f1f5f9] light:text-[#204180]">
-                <th class="p-[14px_20px] text-left">Name</th>
-                <th class="p-[14px_20px] text-left">Email</th>
-                <th class="p-[14px_20px] text-left">Phone</th>
-                <th class="p-[14px_20px] text-left">Message</th>
-                <th class="p-[14px_20px] text-left">Status</th>
-              </tr>
-            </thead>
-            <tbody id="enquiriesTableBody" class="text-[#d1d5db] text-[0.92rem] light:text-[#334155]">
-              <tr>
-                <td colspan="5" class="p-[14px_20px] text-center text-[#666] border-b border-[rgba(255,255,255,0.05)] light:border-[rgba(0,0,0,0.06)]">Loading enquiries...</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="overflow-x-auto w-full">
+            <table class="w-full border-collapse mt-5 bg-[rgba(255,255,255,0.01)] rounded-xl overflow-hidden min-w-[750px]">
+              <thead>
+                <tr class="border-b border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.03)] text-[#e0a730] font-semibold light:border-[rgba(0,0,0,0.06)] light:bg-[#f1f5f9] light:text-[#204180]">
+                  <th class="p-[14px_20px] text-left">Name</th>
+                  <th class="p-[14px_20px] text-left">Email</th>
+                  <th class="p-[14px_20px] text-left">Phone</th>
+                  <th class="p-[14px_20px] text-left">Message</th>
+                  <th class="p-[14px_20px] text-left">Status</th>
+                </tr>
+              </thead>
+              <tbody id="enquiriesTableBody" class="text-[#d1d5db] text-[0.92rem] light:text-[#334155]">
+                <tr>
+                  <td colspan="5" class="p-[14px_20px] text-center text-[#666] border-b border-[rgba(255,255,255,0.05)] light:border-[rgba(0,0,0,0.06)]">Loading enquiries...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
           <div class="pagination-container flex justify-between items-center mt-5 text-[0.88rem] text-[#9ca3af]" id="enqPagination">
             <span id="enqPaginationInfo">Showing page 1 of 1</span>
             <div class="flex gap-2">
@@ -318,49 +316,80 @@
             <p class="text-[#888]">Manage student placements, package details, and company listings.</p>
             <button class="bg-[#e0a730] text-[#111] border-none py-[11px] px-[22px] rounded-lg font-bold hover:bg-[#c99324] hover:shadow-[0_4px_15px_rgba(224,167,48,0.2)] transition-all light:bg-[#204180] light:text-white light:hover:bg-[#173266] light:hover:shadow-[0_4px_15px_rgba(32,65,128,0.2)]" onclick="openAddPlacementModal()">+ Add Placement</button>
           </div>
-          <table class="w-full border-collapse mt-5 bg-[rgba(255,255,255,0.01)] rounded-xl overflow-hidden">
-            <thead>
-              <tr class="border-b border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.03)] text-[#e0a730] font-semibold light:border-[rgba(0,0,0,0.06)] light:bg-[#f1f5f9] light:text-[#204180]">
-                <th class="p-[14px_20px] text-left">Student Name</th>
-                <th class="p-[14px_20px] text-left">Company</th>
-                <th class="p-[14px_20px] text-left">Package (LPA)</th>
-                <th class="p-[14px_20px] text-left">Designation</th>
-                <th class="p-[14px_20px] text-left">Year</th>
-                <th class="p-[14px_20px] text-left">Show/Hide</th>
-                <th class="p-[14px_20px] text-left">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="placementsTableBody" class="text-[#d1d5db] text-[0.92rem] light:text-[#334155]">
-              <tr>
-                <td colspan="7" class="p-[14px_20px] text-center text-[#666] border-b border-[rgba(255,255,255,0.05)] light:border-[rgba(0,0,0,0.06)]">Loading placements...</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="overflow-x-auto w-full">
+            <table class="w-full border-collapse mt-5 bg-[rgba(255,255,255,0.01)] rounded-xl overflow-hidden min-w-[750px]">
+              <thead>
+                <tr class="border-b border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.03)] text-[#e0a730] font-semibold light:border-[rgba(0,0,0,0.06)] light:bg-[#f1f5f9] light:text-[#204180]">
+                  <th class="p-[14px_20px] text-left">Student Name</th>
+                  <th class="p-[14px_20px] text-left">Company</th>
+                  <th class="p-[14px_20px] text-left">Package (LPA)</th>
+                  <th class="p-[14px_20px] text-left">Designation</th>
+                  <th class="p-[14px_20px] text-left">Year</th>
+                  <th class="p-[14px_20px] text-left">Show/Hide</th>
+                  <th class="p-[14px_20px] text-left">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="placementsTableBody" class="text-[#d1d5db] text-[0.92rem] light:text-[#334155]">
+                <tr>
+                  <td colspan="7" class="p-[14px_20px] text-center text-[#666] border-b border-[rgba(255,255,255,0.05)] light:border-[rgba(0,0,0,0.06)]">Loading placements...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </section>
 
         <!-- PANEL: BLOGS -->
         <section class="admin-panel-content" id="panel-blogs" style="display: none;">
-          <div class="flex justify-between items-center mb-5">
-            <p class="text-[#888]">Publish technical blogs and job hiring alerts with Grok AI helper.</p>
-            <button class="bg-[#e0a730] text-[#111] border-none py-[11px] px-[22px] rounded-lg font-bold hover:bg-[#c99324] hover:shadow-[0_4px_15px_rgba(224,167,48,0.2)] transition-all light:bg-[#204180] light:text-white light:hover:bg-[#173266] light:hover:shadow-[0_4px_15px_rgba(32,65,128,0.2)]" onclick="openAddBlogModal()">+ Create Post</button>
+          <div class="flex justify-between items-center mb-5 flex-wrap gap-3">
+            <p class="text-[#888]">Publish technical blog posts with Grok AI helper.</p>
+            <button class="bg-[#e0a730] text-[#111] border-none py-[11px] px-[22px] rounded-lg font-bold hover:bg-[#c99324] hover:shadow-[0_4px_15px_rgba(224,167,48,0.2)] transition-all light:bg-[#204180] light:text-white light:hover:bg-[#173266] light:hover:shadow-[0_4px_15px_rgba(32,65,128,0.2)]" onclick="openAddBlogModal('Blog')">+ Create Blog Post</button>
           </div>
-          <table class="w-full border-collapse mt-5 bg-[rgba(255,255,255,0.01)] rounded-xl overflow-hidden">
-            <thead>
-              <tr class="border-b border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.03)] text-[#e0a730] font-semibold light:border-[rgba(0,0,0,0.06)] light:bg-[#f1f5f9] light:text-[#204180]">
-                <th class="p-[14px_20px] text-left">Title</th>
-                <th class="p-[14px_20px] text-left">Type</th>
-                <th class="p-[14px_20px] text-left">Author</th>
-                <th class="p-[14px_20px] text-left">Status</th>
-                <th class="p-[14px_20px] text-left">Show/Hide</th>
-                <th class="p-[14px_20px] text-left">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="blogsTableBody" class="text-[#d1d5db] text-[0.92rem] light:text-[#334155]">
-              <tr>
-                <td colspan="6" class="p-[14px_20px] text-center text-[#666] border-b border-[rgba(255,255,255,0.05)] light:border-[rgba(0,0,0,0.06)]">Loading blogs...</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="overflow-x-auto w-full">
+            <table class="w-full border-collapse mt-5 bg-[rgba(255,255,255,0.01)] rounded-xl overflow-hidden min-w-[750px]">
+              <thead>
+                <tr class="border-b border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.03)] text-[#e0a730] font-semibold light:border-[rgba(0,0,0,0.06)] light:bg-[#f1f5f9] light:text-[#204180]">
+                  <th class="p-[14px_20px] text-left">Title</th>
+                  <th class="p-[14px_20px] text-left">Author</th>
+                  <th class="p-[14px_20px] text-left">Tags</th>
+                  <th class="p-[14px_20px] text-left">Status</th>
+                  <th class="p-[14px_20px] text-left">Show/Hide</th>
+                  <th class="p-[14px_20px] text-left">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="blogsTableBody" class="text-[#d1d5db] text-[0.92rem] light:text-[#334155]">
+                <tr>
+                  <td colspan="6" class="p-[14px_20px] text-center text-[#666] border-b border-[rgba(255,255,255,0.05)] light:border-[rgba(0,0,0,0.06)]">Loading blogs...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- PANEL: HIRING -->
+        <section class="admin-panel-content" id="panel-hiring" style="display: none;">
+          <div class="flex justify-between items-center mb-5 flex-wrap gap-3">
+            <p class="text-[#888]">Manage hiring posts — for SSSAM Academy's own jobs or external companies.</p>
+            <button class="bg-[#e0a730] text-[#111] border-none py-[11px] px-[22px] rounded-lg font-bold hover:bg-[#c99324] hover:shadow-[0_4px_15px_rgba(224,167,48,0.2)] transition-all light:bg-[#204180] light:text-white light:hover:bg-[#173266] light:hover:shadow-[0_4px_15px_rgba(32,65,128,0.2)]" onclick="openAddBlogModal('Hiring')">+ Post a Job</button>
+          </div>
+          <div class="overflow-x-auto w-full">
+            <table class="w-full border-collapse mt-5 bg-[rgba(255,255,255,0.01)] rounded-xl overflow-hidden min-w-[750px]">
+              <thead>
+                <tr class="border-b border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.03)] text-[#e0a730] font-semibold light:border-[rgba(0,0,0,0.06)] light:bg-[#f1f5f9] light:text-[#204180]">
+                  <th class="p-[14px_20px] text-left">Job Title</th>
+                  <th class="p-[14px_20px] text-left">Source</th>
+                  <th class="p-[14px_20px] text-left">Company</th>
+                  <th class="p-[14px_20px] text-left">Status</th>
+                  <th class="p-[14px_20px] text-left">Show/Hide</th>
+                  <th class="p-[14px_20px] text-left">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="hiringTableBody" class="text-[#d1d5db] text-[0.92rem] light:text-[#334155]">
+                <tr>
+                  <td colspan="6" class="p-[14px_20px] text-center text-[#666] border-b border-[rgba(255,255,255,0.05)] light:border-[rgba(0,0,0,0.06)]">Loading hiring posts...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </section>
 
         <!-- PANEL: NOTES -->
@@ -372,22 +401,24 @@
               <button class="bg-[#e0a730] text-[#111] border-none py-[11px] px-[22px] rounded-lg font-bold hover:bg-[#c99324] hover:shadow-[0_4px_15px_rgba(224,167,48,0.2)] transition-all light:bg-[#204180] light:text-white light:hover:bg-[#173266] light:hover:shadow-[0_4px_15px_rgba(32,65,128,0.2)]" onclick="openAddNoteModal()">+ Add Study Note</button>
             </div>
           </div>
-          <table class="w-full border-collapse mt-5 bg-[rgba(255,255,255,0.01)] rounded-xl overflow-hidden">
-            <thead>
-              <tr class="border-b border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.03)] text-[#e0a730] font-semibold light:border-[rgba(0,0,0,0.06)] light:bg-[#f1f5f9] light:text-[#204180]">
-                <th class="p-[14px_20px] text-left">Title</th>
-                <th class="p-[14px_20px] text-left">Category</th>
-                <th class="p-[14px_20px] text-left">Downloads</th>
-                <th class="p-[14px_20px] text-left">Show/Hide</th>
-                <th class="p-[14px_20px] text-left">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="notesTableBody" class="text-[#d1d5db] text-[0.92rem] light:text-[#334155]">
-              <tr>
-                <td colspan="5" class="p-[14px_20px] text-center text-[#666] border-b border-[rgba(255,255,255,0.05)] light:border-[rgba(0,0,0,0.06)]">Loading study notes...</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="overflow-x-auto w-full">
+            <table class="w-full border-collapse mt-5 bg-[rgba(255,255,255,0.01)] rounded-xl overflow-hidden min-w-[750px]">
+              <thead>
+                <tr class="border-b border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.03)] text-[#e0a730] font-semibold light:border-[rgba(0,0,0,0.06)] light:bg-[#f1f5f9] light:text-[#204180]">
+                  <th class="p-[14px_20px] text-left">Title</th>
+                  <th class="p-[14px_20px] text-left">Category</th>
+                  <th class="p-[14px_20px] text-left">Downloads</th>
+                  <th class="p-[14px_20px] text-left">Show/Hide</th>
+                  <th class="p-[14px_20px] text-left">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="notesTableBody" class="text-[#d1d5db] text-[0.92rem] light:text-[#334155]">
+                <tr>
+                  <td colspan="5" class="p-[14px_20px] text-center text-[#666] border-b border-[rgba(255,255,255,0.05)] light:border-[rgba(0,0,0,0.06)]">Loading study notes...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </section>
 
         <!-- PANEL: SETTINGS -->
@@ -507,27 +538,27 @@
           <div class="col-span-1 md:col-span-2 bg-[rgba(224,167,48,0.05)] p-3.5 rounded-lg mb-2.5 border border-[rgba(224,167,48,0.15)] text-[0.85rem] text-[#ccc] leading-relaxed">
             <strong class="text-[#e0a730] block mb-1">💡 SEO Guideline for Placements:</strong>
             For best Google search ranking, always fill in exact student names and designations.
-            <br/><em>Example: Student <strong>"Laxmi Kumari"</strong> at <strong>"CompliStack Technologies"</strong> as <strong>"Full Stack Developer"</strong>.</em>
+            <br/><em>Example: Student <strong>"Student Name"</strong> at <strong>"Company Name"</strong> as <strong>"Designation"</strong>.</em>
           </div>
           <div class="flex flex-col gap-1.5">
             <label for="plStudentName" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Student Name *</label>
-            <input type="text" id="plStudentName" placeholder="e.g. Laxmi Kumari" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" required />
+            <input type="text" id="plStudentName" placeholder="Enter student name" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" required />
           </div>
           <div class="flex flex-col gap-1.5">
             <label for="plCompanyName" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Company Name *</label>
-            <input type="text" id="plCompanyName" placeholder="e.g. CompliStack Technologies" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" required />
+            <input type="text" id="plCompanyName" placeholder="Enter company name" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" required />
           </div>
           <div class="flex flex-col gap-1.5">
             <label for="plPackageLPA" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Package (LPA) *</label>
-            <input type="number" step="0.1" id="plPackageLPA" placeholder="e.g. 5.5" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" required />
+            <input type="number" step="0.1" id="plPackageLPA" placeholder="Enter package in LPA (e.g. 5.5)" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" required />
           </div>
           <div class="flex flex-col gap-1.5">
             <label for="plDesignation" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Designation *</label>
-            <input type="text" id="plDesignation" placeholder="e.g. Full Stack Developer" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" required />
+            <input type="text" id="plDesignation" placeholder="Enter designation" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" required />
           </div>
           <div class="flex flex-col gap-1.5">
             <label for="plPlacedYear" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Placed Year</label>
-            <input type="number" id="plPlacedYear" placeholder="e.g. 2026" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" />
+            <input type="number" id="plPlacedYear" placeholder="Enter placement year (e.g. 2026)" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" />
           </div>
           <div class="flex flex-col gap-1.5">
             <label for="plActive" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Show on Website</label>
@@ -561,7 +592,8 @@
           <h3 id="blogModalTitle" class="font-outfit font-bold text-[#e0a730] text-lg light:text-[#204180]">Create Blog / Hiring Post</h3>
           <span class="text-[1.8rem] cursor-pointer text-[#9ca3af] leading-none transition-colors hover:text-white light:hover:text-[#0f172a]" onclick="closeBlogModal()">&times;</span>
         </div>
-        <div class="bg-[rgba(224,167,48,0.05)] p-[15px] rounded-lg mb-5 border border-[rgba(224,167,48,0.15)]">
+        <!-- Blog AI Section -->
+        <div id="blogAISection" class="bg-[rgba(224,167,48,0.05)] p-[15px] rounded-lg mb-5 border border-[rgba(224,167,48,0.15)]">
           <strong class="text-[#e0a730] block mb-1">🤖 Write with Grok AI</strong>
           <div class="flex gap-2.5">
             <input type="text" id="aiBlogPrompt" placeholder="Enter topic (e.g., Why Node.js is great for backend)..." class="flex-1 bg-[rgba(0,0,0,0.2)] border border-[rgba(255,255,255,0.1)] p-2.5 rounded-md text-white outline-none" />
@@ -575,22 +607,41 @@
             <button type="button" class="bg-[rgba(255,255,255,0.05)] text-[#d1d5db] border border-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.08)] hover:text-white text-[0.72rem] py-1 px-2 rounded w-auto light:bg-[#f1f5f9] light:text-[#475569] light:border-[rgba(0,0,0,0.06)] light:hover:bg-[#e2e8f0]" onclick="setAIPrompt('Machine Learning basic guide for beginners')">ML Basics</button>
           </div>
         </div>
+
+        <!-- Hiring AI Section -->
+        <div id="hiringAISection" class="bg-[rgba(59,130,246,0.05)] p-[15px] rounded-lg mb-5 border border-[rgba(59,130,246,0.15)]" style="display:none;">
+          <strong class="text-[#3b82f6] block mb-1">🤖 Generate Job Description with AI</strong>
+          <div class="flex gap-2.5">
+            <input type="text" id="aiJobPrompt" placeholder="Enter job role (e.g., Full Stack Developer, Python Trainer...)" class="flex-1 bg-[rgba(0,0,0,0.2)] border border-[rgba(255,255,255,0.1)] p-2.5 rounded-md text-white outline-none" />
+            <button type="button" class="bg-[#3b82f6] text-white hover:bg-[#2563eb] px-[18px] font-bold rounded-lg transition-all text-[0.9rem]" id="btnGenerateJobAI" onclick="generateAIJobContent()">Generate</button>
+          </div>
+          <div class="mt-2.5 flex gap-2 flex-wrap items-center">
+            <span class="text-[0.78rem] text-[#888]">Quick roles:</span>
+            <button type="button" class="bg-[rgba(255,255,255,0.05)] text-[#d1d5db] border border-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.08)] hover:text-white text-[0.72rem] py-1 px-2 rounded" onclick="setJobAIPrompt('Full Stack Developer')">Full Stack Dev</button>
+            <button type="button" class="bg-[rgba(255,255,255,0.05)] text-[#d1d5db] border border-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.08)] hover:text-white text-[0.72rem] py-1 px-2 rounded" onclick="setJobAIPrompt('React JS Developer')">React Developer</button>
+            <button type="button" class="bg-[rgba(255,255,255,0.05)] text-[#d1d5db] border border-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.08)] hover:text-white text-[0.72rem] py-1 px-2 rounded" onclick="setJobAIPrompt('Python & Django Developer')">Python Dev</button>
+            <button type="button" class="bg-[rgba(255,255,255,0.05)] text-[#d1d5db] border border-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.08)] hover:text-white text-[0.72rem] py-1 px-2 rounded" onclick="setJobAIPrompt('IT Trainer / Faculty')">IT Trainer</button>
+            <button type="button" class="bg-[rgba(255,255,255,0.05)] text-[#d1d5db] border border-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.08)] hover:text-white text-[0.72rem] py-1 px-2 rounded" onclick="setJobAIPrompt('Digital Marketing Executive')">Digital Marketing</button>
+            <button type="button" class="bg-[rgba(255,255,255,0.05)] text-[#d1d5db] border border-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.08)] hover:text-white text-[0.72rem] py-1 px-2 rounded" onclick="setJobAIPrompt('Web Design Intern')">Web Intern</button>
+          </div>
+        </div>
+
         <form id="blogForm" class="grid grid-cols-1 md:grid-cols-2 gap-[15px]">
           <input type="hidden" id="blogId" />
           <div class="flex flex-col gap-1.5">
-            <label for="blogTitle" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Title *</label>
+            <label for="blogTitle" id="lbl-title" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Title *</label>
             <input type="text" id="blogTitle" oninput="autoGenerateSlug()" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" required />
           </div>
           <div class="flex flex-col gap-1.5">
-            <label for="blogSlug" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Slug (SEO URL Part) *</label>
+            <label for="blogSlug" id="lbl-slug" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Slug (SEO URL Part) *</label>
             <input type="text" id="blogSlug" placeholder="e.g. why-nodejs-is-great" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" required />
           </div>
           <div class="col-span-1 md:col-span-2 flex flex-col gap-1.5">
-            <label for="blogSummary" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Meta Summary * (Short SEO description)</label>
+            <label for="blogSummary" id="lbl-summary" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Meta Summary * (Short SEO description)</label>
             <textarea id="blogSummary" rows="2" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" required></textarea>
           </div>
           <div class="col-span-1 md:col-span-2 flex flex-col gap-1.5">
-            <label for="blogContent" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Blog Content (HTML allowed) *</label>
+            <label for="blogContent" id="lbl-content" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Blog Content (HTML allowed) *</label>
             <textarea id="blogContent" rows="8" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" required></textarea>
           </div>
           <div class="flex flex-col gap-1.5">
@@ -616,7 +667,10 @@
           </div>
           <div class="flex flex-col gap-1.5">
             <label for="blogTags" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Tags (Comma-separated)</label>
-            <input type="text" id="blogTags" placeholder="python, coding, job" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" />
+            <div class="flex gap-2">
+              <input type="text" id="blogTags" placeholder="python, coding, job" class="flex-1 bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" />
+              <button type="button" id="btnGenerateTags" onclick="generateAITags()" class="bg-[rgba(224,167,48,0.1)] text-[#e0a730] border border-[rgba(224,167,48,0.3)] hover:bg-[rgba(224,167,48,0.2)] px-3 rounded-lg text-sm font-semibold transition-all whitespace-nowrap light:bg-[rgba(32,65,128,0.08)] light:text-[#204180] light:border-[rgba(32,65,128,0.2)] light:hover:bg-[rgba(32,65,128,0.15)]">🤖 AI Tags</button>
+            </div>
           </div>
           <div class="flex flex-col gap-1.5">
             <label for="blogImage" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Banner Image (S3 Upload)</label>
@@ -626,21 +680,29 @@
 
           <!-- HIRING ALERTS SPECIFIC FIELDS -->
           <div id="hiringFields" class="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-[15px]" style="display: none; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 15px; margin-top: 5px;">
-            <div class="flex flex-col gap-1.5">
+            <div class="col-span-1 md:col-span-2 flex flex-col gap-1.5">
+              <label for="hirSource" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Hiring Source *</label>
+              <select id="hirSource" onchange="toggleHiringSource()" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]">
+                <option value="own" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">🏢 SSSAM Academy (Own Job Post)</option>
+                <option value="external" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">🌐 External Company Job</option>
+              </select>
+              <small id="hirSourceNote" class="text-[#e0a730] text-xs mt-1">Posting job for SSSAM Academy itself (trainer, intern, developer, etc.)</small>
+            </div>
+            <div class="flex flex-col gap-1.5" id="hirCompanyField">
               <label for="hirCompany" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Hiring Company Name</label>
-              <input type="text" id="hirCompany" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" />
+              <input type="text" id="hirCompany" placeholder="Enter external company name" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" />
             </div>
             <div class="flex flex-col gap-1.5">
-              <label for="hirRole" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Hiring Designation / Role</label>
-              <input type="text" id="hirRole" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" />
+              <label for="hirRole" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Job Role / Designation</label>
+              <input type="text" id="hirRole" placeholder="e.g. Full Stack Developer" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" />
             </div>
             <div class="flex flex-col gap-1.5">
               <label for="hirLocation" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Job Location</label>
               <input type="text" id="hirLocation" placeholder="e.g. Gurugram / Remote" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" />
             </div>
             <div class="flex flex-col gap-1.5">
-              <label for="hirApplyLink" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Direct Apply Link</label>
-              <input type="text" id="hirApplyLink" placeholder="e.g. https://tcs.com/careers" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" />
+              <label for="hirApplyLink" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Apply / Contact Link</label>
+              <input type="text" id="hirApplyLink" placeholder="e.g. https://company.com/careers" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" />
             </div>
           </div>
 
@@ -700,8 +762,8 @@
           <h3 class="font-outfit font-bold text-[#e0a730] text-lg light:text-[#204180]">Study Notes Download Leads</h3>
           <span class="text-[1.8rem] cursor-pointer text-[#9ca3af] leading-none transition-colors hover:text-white light:hover:text-[#0f172a]" onclick="closeNotesLeadsModal()">&times;</span>
         </div>
-        <div style="max-height: 400px; overflow-y: auto;">
-          <table class="w-full border-collapse mt-5 bg-[rgba(255,255,255,0.01)] rounded-xl overflow-hidden">
+        <div class="max-height: 400px; overflow-y: auto; w-full overflow-x-auto">
+          <table class="w-full border-collapse mt-5 bg-[rgba(255,255,255,0.01)] rounded-xl overflow-hidden min-w-[700px]">
             <thead>
               <tr class="border-b border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.03)] text-[#e0a730] font-semibold light:border-[rgba(0,0,0,0.06)] light:bg-[#f1f5f9] light:text-[#204180]">
                 <th class="p-[14px_20px] text-left">Name</th>

@@ -22,6 +22,24 @@ window.confirm = function(message) {
   });
 };
 
+window.alert = function(message) {
+  return new Promise((resolve) => {
+    document.getElementById("customDialogTitle").textContent = "Notification";
+    document.getElementById("customDialogBody").textContent = message;
+    document.getElementById("customDialogPromptContainer").style.display = "none";
+    document.getElementById("customDialogCancelBtn").style.display = "none";
+    document.getElementById("customDialogConfirmBtn").textContent = "OK";
+    
+    const modal = document.getElementById("customDialogModal");
+    modal.style.display = "flex";
+    
+    dialogResolver = (value) => {
+      modal.style.display = "none";
+      resolve(true);
+    };
+  });
+};
+
 window.prompt = function(message, defaultValue = "") {
   return new Promise((resolve) => {
     document.getElementById("customDialogTitle").textContent = "Enter Details";
