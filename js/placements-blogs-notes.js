@@ -3,7 +3,7 @@ window.setAIPrompt = function(val) {
   document.getElementById("aiBlogPrompt").value = val;
 };
 
-document.addEventListener("DOMContentLoaded", () => {
+function initPlacementsBlogsNotes() {
   // Navigation hook to trigger data fetch
   const navBtns = document.querySelectorAll(".admin-nav-btn");
   navBtns.forEach(btn => {
@@ -17,7 +17,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Modal submissions handlers
   setupFormSubmissions();
-});
+}
+
+// Expose CRUD loaders and status toggles globally to allow inline HTML onclick/onchange triggers
+window.loadPlacements = loadPlacements;
+window.togglePlacementStatus = togglePlacementStatus;
+window.loadBlogs = loadBlogs;
+window.toggleBlogStatus = toggleBlogStatus;
+window.loadNotes = loadNotes;
+window.toggleNoteStatus = toggleNoteStatus;
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initPlacementsBlogsNotes);
+} else {
+  initPlacementsBlogsNotes();
+}
 
 // Helper for JWT Auth API calls
 async function s3AdminFetch(url, options = {}) {
