@@ -13,6 +13,7 @@ function initPlacementsBlogsNotes() {
       if (panel === "blogs") loadBlogs();
       if (panel === "hiring") loadHiring();
       if (panel === "notes") loadNotes();
+      if (panel === "gallery") loadGallery();
     });
   });
 
@@ -28,6 +29,8 @@ window.loadHiring = loadHiring;
 window.toggleBlogStatus = toggleBlogStatus;
 window.loadNotes = loadNotes;
 window.toggleNoteStatus = toggleNoteStatus;
+window.loadGallery = loadGallery;
+window.toggleGalleryStatus = toggleGalleryStatus;
 
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", initPlacementsBlogsNotes);
@@ -961,4 +964,144 @@ function setupFormSubmissions() {
       showToast("Error", err.message, true);
     }
   });
+
+  // Gallery Form
+  document.getElementById("galleryForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const id = document.getElementById("galleryItemId").value;
+    const isEdit = id !== "";
+    const url = isEdit ? `/api/admin/gallery/${id}` : "/api/admin/gallery";
+    const method = isEdit ? "PUT" : "POST";
+
+    const formData = new FormData();
+    formData.append("title", document.getElementById("galTitle").value.trim());
+    formData.append("category", document.getElementById("galCategory").value);
+    formData.append("altText", document.getElementById("galAltText").value.trim());
+    formData.append("active", document.getElementById("galActive").value);
+
+    const imageInput = document.getElementById("galImage");
+    if (imageInput.files.length > 0) {
+      formData.append("image", imageInput.files[0]);
+    } else if (!isEdit) {
+      showToast("Error", "Please select an image to upload.", true);
+      return;
+    }
+
+    try {
+      const res = await s3AdminFetch(url, { method, body: formData });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Failed to save gallery image");
+      showToast("Success", isEdit ? "Gallery image updated!" : "Gallery image uploaded!", false);
+      closeGalleryModal();
+      loadGallery();
+    } catch (err) {
+      showToast("Error", err.message, true);
+    }
+  });
 }
+
+// -------------------------------------------------------------------------
+// 4. GALLERY MANAGEMENT
+// -------------------------------------------------------------------------
+const CATEGORY_LABELS = {
+  classroom: '👨‍🏫 Classroom',
+  seminar: '🏫 Seminar',
+  lab: '💻 Lab Session',
+  students: '🤝 Students',
+  other: '📷 Other'
+};
+
+async function loadGallery() {
+  const grid = document.getElementById("galleryAdminGrid");
+  grid.innerHTML = `<div class="col-span-full text-center text-[#666] py-10">Loading gallery...</div>`;
+
+  try {
+    const res = await s3AdminFetch("/api/admin/gallery");
+    const list = await res.json();
+
+    if (!list || list.length === 0) {
+      grid.innerHTML = `<div class="col-span-full text-center text-[#888] py-10">No gallery images yet. Click "+ Upload Image" to add one.</div>`;
+      return;
+    }
+
+    grid.innerHTML = list.map(item => `
+      <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; overflow: hidden; position: relative;">
+        <img src="${item.imageUrl}" alt="${item.altText || item.title}" style="width: 100%; height: 160px; object-fit: cover; display: block;" loading="lazy" />
+        <div style="padding: 10px 12px;">
+          <div style="font-size: 0.8rem; font-weight: 700; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${item.title}">${item.title}</div>
+          <div style="font-size: 0.72rem; color: #888; margin-top: 2px;">${CATEGORY_LABELS[item.category] || item.category}</div>
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px; gap: 6px; flex-wrap: wrap;">
+            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; font-size: 0.75rem; color: ${item.active ? '#10b981' : '#888'};">
+              <input type="checkbox" ${item.active ? 'checked' : ''} onchange="toggleGalleryStatus('${item._id}', this.checked)" style="cursor: pointer;" />
+              ${item.active ? 'Visible' : 'Hidden'}
+            </label>
+            <div style="display: flex; gap: 5px;">
+              <span class="action-badge badge-edit" style="width: auto; padding: 3px 10px; font-size: 0.7rem;" onclick="openEditGalleryModal('${encodeURIComponent(JSON.stringify(item))}')">Edit</span>
+              <span class="action-badge badge-reject" style="width: auto; padding: 3px 10px; font-size: 0.7rem;" onclick="deleteGalleryItem('${item._id}')">Delete</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    `).join("");
+  } catch (err) {
+    grid.innerHTML = `<div class="col-span-full text-center text-[#ef5350] py-10">Failed to load gallery: ${err.message}</div>`;
+  }
+}
+
+window.openAddGalleryModal = function() {
+  document.getElementById("galleryForm").reset();
+  document.getElementById("galleryItemId").value = "";
+  document.getElementById("galleryModalTitle").textContent = "Upload Gallery Image";
+  document.getElementById("galImage").required = true;
+  document.getElementById("galImageInfo").textContent = "";
+  document.getElementById("galImagePreviewWrap").style.display = "none";
+  document.getElementById("galleryModal").style.display = "flex";
+};
+
+window.openEditGalleryModal = function(itemJsonStr) {
+  const item = JSON.parse(decodeURIComponent(itemJsonStr));
+  document.getElementById("galleryForm").reset();
+  document.getElementById("galleryItemId").value = item._id;
+  document.getElementById("galleryModalTitle").textContent = "Edit Gallery Image";
+  document.getElementById("galTitle").value = item.title;
+  document.getElementById("galCategory").value = item.category;
+  document.getElementById("galAltText").value = item.altText || "";
+  document.getElementById("galActive").value = item.active.toString();
+  document.getElementById("galImage").required = false;
+  document.getElementById("galImageInfo").textContent = "Leave empty to retain existing image.";
+  // Show current image preview
+  const previewWrap = document.getElementById("galImagePreviewWrap");
+  const previewImg = document.getElementById("galImagePreview");
+  previewImg.src = item.imageUrl;
+  previewWrap.style.display = "block";
+  document.getElementById("galleryModal").style.display = "flex";
+};
+
+window.closeGalleryModal = function() {
+  document.getElementById("galleryModal").style.display = "none";
+};
+
+async function toggleGalleryStatus(id, checked) {
+  try {
+    const formData = new FormData();
+    formData.append("active", checked);
+    const res = await s3AdminFetch(`/api/admin/gallery/${id}`, { method: "PUT", body: formData });
+    if (!res.ok) throw new Error("Status update failed");
+    showToast("Success", "Gallery visibility updated", false);
+    loadGallery();
+  } catch (e) {
+    showToast("Error", e.message, true);
+  }
+}
+
+window.deleteGalleryItem = async function(id) {
+  if (!await confirm("Are you sure you want to delete this gallery image? It will also be removed from cloud storage.")) return;
+  try {
+    const res = await s3AdminFetch(`/api/admin/gallery/${id}`, { method: "DELETE" });
+    if (!res.ok) throw new Error("Delete failed");
+    showToast("Success", "Gallery image deleted.", false);
+    loadGallery();
+  } catch (e) {
+    showToast("Error", e.message, true);
+  }
+};

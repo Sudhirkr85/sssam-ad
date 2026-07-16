@@ -156,6 +156,7 @@
           <button class="admin-nav-btn" data-panel="blogs">Blogs</button>
           <button class="admin-nav-btn" data-panel="hiring">Hiring</button>
           <button class="admin-nav-btn" data-panel="notes">Study Notes</button>
+          <button class="admin-nav-btn" data-panel="gallery">🖼 Gallery</button>
           <button class="admin-nav-btn" data-panel="settings">General Settings</button>
         </nav>
         <button id="btnLogout" class="bg-[rgba(255,255,255,0.05)] text-[#d1d5db] border border-[rgba(255,255,255,0.1)] py-2.5 px-[22px] font-semibold rounded-lg hover:bg-[rgba(255,255,255,0.08)] hover:text-white transition-all mt-auto w-full light:bg-[#f1f5f9] light:text-[#475569] light:border-[rgba(0,0,0,0.06)] light:hover:bg-[#e2e8f0] light:hover:text-[#0f172a]">Logout</button>
@@ -418,6 +419,18 @@
                 </tr>
               </tbody>
             </table>
+          </div>
+        </section>
+
+        <!-- PANEL: GALLERY -->
+        <section class="admin-panel-content" id="panel-gallery" style="display: none;">
+          <div class="flex justify-between items-center mb-5">
+            <p class="text-[#888]">Upload and manage academy gallery images. Shown dynamically on the gallery page.</p>
+            <button class="bg-[#e0a730] text-[#111] border-none py-[11px] px-[22px] rounded-lg font-bold hover:bg-[#c99324] hover:shadow-[0_4px_15px_rgba(224,167,48,0.2)] transition-all light:bg-[#204180] light:text-white light:hover:bg-[#173266] light:hover:shadow-[0_4px_15px_rgba(32,65,128,0.2)]" onclick="openAddGalleryModal()">+ Upload Image</button>
+          </div>
+          <!-- Gallery Image Grid -->
+          <div id="galleryAdminGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
+            <div class="col-span-full text-center text-[#666] py-10">Loading gallery...</div>
           </div>
         </section>
 
@@ -827,6 +840,64 @@
           <button type="button" class="bg-[rgba(255,255,255,0.05)] text-[#d1d5db] border border-[rgba(255,255,255,0.1)] py-2 px-5 font-semibold rounded-lg hover:bg-[rgba(255,255,255,0.08)] hover:text-white transition-all light:bg-[#f1f5f9] light:text-[#475569] light:border-[rgba(0,0,0,0.06)] light:hover:bg-[#e2e8f0] light:hover:text-[#0f172a]" onclick="resolveCustomDialog(false)" id="customDialogCancelBtn">Cancel</button>
           <button type="button" class="bg-[#e0a730] text-[#111] border-none py-2 px-5 font-bold rounded-lg hover:bg-[#c99324] hover:shadow-[0_4px_15px_rgba(224,167,48,0.2)] transition-all light:bg-[#204180] light:text-white light:hover:bg-[#173266] light:hover:shadow-[0_4px_15px_rgba(32,65,128,0.2)]" onclick="resolveCustomDialog(true)" id="customDialogConfirmBtn">Confirm</button>
         </div>
+      </div>
+    </div>
+
+    <!-- GALLERY UPLOAD/EDIT MODAL -->
+    <div id="galleryModal" class="fixed inset-0 bg-[rgba(0,0,0,0.6)] backdrop-blur-[4px] flex items-center justify-center z-[1000] p-5" style="display: none;">
+      <div class="bg-[#111827] border border-[rgba(255,255,255,0.08)] rounded-2xl p-[30px] max-w-[550px] w-full shadow-[0_20px_40px_rgba(0,0,0,0.5)] max-h-[90vh] overflow-y-auto light:bg-white light:border-[rgba(0,0,0,0.08)] light:shadow-[0_20px_40px_rgba(0,0,0,0.08)]">
+        <div class="flex justify-between items-center mb-6 border-b border-[rgba(255,255,255,0.06)] pb-4 light:border-[rgba(0,0,0,0.08)]">
+          <h3 id="galleryModalTitle" class="font-outfit font-bold text-[#e0a730] text-lg light:text-[#204180]">Upload Gallery Image</h3>
+          <span class="text-[1.8rem] cursor-pointer text-[#9ca3af] leading-none transition-colors hover:text-white light:hover:text-[#0f172a]" onclick="closeGalleryModal()">&times;</span>
+        </div>
+        <!-- SEO Tip -->
+        <div class="bg-[rgba(224,167,48,0.05)] p-3.5 rounded-lg mb-5 border border-[rgba(224,167,48,0.15)] text-[0.85rem] text-[#ccc] leading-relaxed">
+          <strong class="text-[#e0a730] block mb-1">💡 SEO Tip for Gallery Images:</strong>
+          Fill in a descriptive title and alt text for better Google image search ranking.
+          <br/><em>Example: <strong>"Data Science Batch 2026 - Live Classroom Session, SSSAM Academy Sector 14 Gurugram"</strong></em>
+        </div>
+        <form id="galleryForm" class="grid grid-cols-1 md:grid-cols-2 gap-[15px]">
+          <input type="hidden" id="galleryItemId" />
+          <div class="flex flex-col gap-1.5">
+            <label for="galTitle" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Image Label / Title *</label>
+            <input type="text" id="galTitle" placeholder="e.g. Python Batch Classroom" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" required />
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <label for="galCategory" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Category *</label>
+            <select id="galCategory" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" required>
+              <option value="classroom" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">👨‍🏫 Classroom</option>
+              <option value="seminar" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">🏫 Seminar</option>
+              <option value="lab" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">💻 Lab Session</option>
+              <option value="students" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">🤝 Students</option>
+              <option value="other" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">📷 Other</option>
+            </select>
+          </div>
+          <div class="col-span-1 md:col-span-2 flex flex-col gap-1.5">
+            <label for="galAltText" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">SEO Alt Text (for Google Image Search)</label>
+            <input type="text" id="galAltText" placeholder="e.g. Students learning Python in SSSAM Academy computer lab Sector 14 Gurugram" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" />
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <label for="galActive" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Visibility</label>
+            <select id="galActive" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]">
+              <option value="true" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">Active (Show on Gallery)</option>
+              <option value="false" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">Hidden</option>
+            </select>
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <label for="galImage" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Image File * (S3 Upload)</label>
+            <input type="file" id="galImage" accept="image/*" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" />
+            <small style="color: #888;" id="galImageInfo"></small>
+          </div>
+          <!-- Preview existing image in edit mode -->
+          <div class="col-span-1 md:col-span-2" id="galImagePreviewWrap" style="display:none;">
+            <img id="galImagePreview" src="" alt="Current Image" style="max-height: 120px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);" />
+            <p style="color:#888; font-size:0.78rem; margin-top:6px;">Current image. Upload a new file to replace it.</p>
+          </div>
+          <div class="col-span-1 md:col-span-2 flex gap-3 mt-5 border-t border-[rgba(255,255,255,0.06)] pt-5">
+            <button type="submit" class="flex-1 bg-[#e0a730] hover:bg-[#c99324] hover:shadow-[0_4px_15px_rgba(224,167,48,0.2)] text-[#111] font-bold py-[11px] px-[22px] rounded-lg transition-all light:bg-[#204180] light:text-white light:hover:bg-[#173266] light:hover:shadow-[0_4px_15px_rgba(32,65,128,0.2)]">Save Image</button>
+            <button type="button" class="flex-1 bg-[rgba(255,255,255,0.05)] text-[#d1d5db] border border-[rgba(255,255,255,0.1)] py-[10px] px-[22px] font-semibold rounded-lg hover:bg-[rgba(255,255,255,0.08)] hover:text-white transition-all light:bg-[#f1f5f9] light:text-[#475569] light:border-[rgba(0,0,0,0.06)] light:hover:bg-[#e2e8f0] light:hover:text-[#0f172a]" onclick="closeGalleryModal()">Cancel</button>
+          </div>
+        </form>
       </div>
     </div>
 
