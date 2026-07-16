@@ -389,12 +389,15 @@ window.autoGenerateSlug = function() {
   if (isEditing) return;
   
   const title = document.getElementById("blogTitle").value;
-  const slug = title.toLowerCase()
+  let slug = title.toLowerCase()
     .trim()
     .replace(/[^a-z0-9\s-]/g, "")
     .replace(/\s+/g, "-")
     .replace(/-+/g, "-");
-  document.getElementById("blogSlug").value = slug;
+    
+  // Append a short random suffix to make it unique by default
+  const suffix = Math.floor(100 + Math.random() * 900); // 3-digit random number
+  document.getElementById("blogSlug").value = `${slug}-${suffix}`;
 };
 
 window.generateAIContent = async function() {
