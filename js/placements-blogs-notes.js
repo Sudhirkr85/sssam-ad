@@ -179,12 +179,10 @@ async function loadBlogs() {
     const list = await res.json();
     const blogs = (list || []).filter(item => item.type !== "Hiring");
 
-    if (!blogs || blogs.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #888;">No blog posts found.</td></tr>`;
-      return;
-    }
+    // Keep a global cache of current listed blogs/hiring for safe editing
+    window.currentLoadedBlogs = blogs;
 
-    tbody.innerHTML = blogs.map(item => `
+    tbody.innerHTML = blogs.map((item, index) => `
       <tr>
         <td><strong>${item.title}</strong><br/><small style="color: #666;">/${item.slug}</small></td>
         <td>${(item.tags || []).slice(0,3).map(t => `<span class="action-badge" style="background:rgba(59,130,246,0.12);color:#3b82f6;width:auto;padding:2px 8px;margin:2px;">${t}</span>`).join("") || '<span style="color:#555;">—</span>'}</td>
@@ -197,7 +195,7 @@ async function loadBlogs() {
           </label>
         </td>
         <td>
-          <span class="action-badge badge-edit" onclick="openEditBlogModal('${encodeURIComponent(JSON.stringify(item))}')">Edit</span>
+          <span class="action-badge badge-edit" onclick="window.triggerBlogEdit(${index}, 'Blog')">Edit</span>
           <span class="action-badge badge-reject" onclick="deleteBlog('${item._id}')">Delete</span>
         </td>
       </tr>
@@ -221,7 +219,10 @@ async function loadHiring() {
       return;
     }
 
-    tbody.innerHTML = hiring.map(item => {
+    // Keep a global cache of current listed hiring items for safe editing
+    window.currentLoadedHiring = hiring;
+
+    tbody.innerHTML = hiring.map((item, index) => {
       const source = item.hiringDetails?.source || "external";
       const sourceBadge = source === "own"
         ? `<span style="background:rgba(224,167,48,0.15);color:#e0a730;" class="action-badge">Own</span>`
@@ -240,7 +241,7 @@ async function loadHiring() {
             </label>
           </td>
           <td>
-            <span class="action-badge badge-edit" onclick="openEditBlogModal('${encodeURIComponent(JSON.stringify(item))}')">Edit</span>
+            <span class="action-badge badge-edit" onclick="window.triggerBlogEdit(${index}, 'Hiring')">Edit</span>
             <span class="action-badge badge-reject" onclick="deleteBlog('${item._id}')">Delete</span>
           </td>
         </tr>
@@ -363,6 +364,18 @@ window.closeBlogModal = function() {
   document.getElementById("blogModal").style.display = "none";
 };
 
+window.triggerBlogEdit = function(index, type) {
+  try {
+    const list = type === 'Hiring' ? window.currentLoadedHiring : window.currentLoadedBlogs;
+    if (!list || !list[index]) return;
+    const item = list[index];
+    // Re-route safely using the serialized JSON in memory
+    window.openEditBlogModal(encodeURIComponent(JSON.stringify(item)));
+  } catch (e) {
+    console.error("Edit routing failed", e);
+  }
+};
+
 window.toggleHiringFields = function() {
   const type = document.getElementById("blogType").value;
   document.getElementById("hiringFields").style.display = type === "Hiring" ? "grid" : "none";
@@ -483,7 +496,10 @@ window.generateAITags = async function() {
     try {
       const data = JSON.parse(raw);
       if (!res.ok) throw new Error(data.message || "Failed to generate tags.");
-      rawTags = data.tags || data.content || data.title || "";
+      rawTags = data.tags || data.content || data.title || data.output || "";
+      if (typeof rawTags === 'object') {
+        rawTags = Array.isArray(rawTags) ? rawTags.join(", ") : JSON.stringify(rawTags);
+      }
     } catch (_) {
       // Response was plain text (AI returned tags directly)
       rawTags = raw;
