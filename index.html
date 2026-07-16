@@ -12,481 +12,75 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" />
-    <style>
-      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-      body { font-family: 'Poppins', sans-serif; background: #0b0f19; color: #e2e8f0; }
-      a { color: inherit; text-decoration: none; }
-      button { cursor: pointer; font-family: inherit; }
-      input, select, textarea { font-family: inherit; }
-
-      .admin-layout {
-        display: flex;
-        min-height: 100vh;
-        background: #0b0f19;
-        font-family: 'Poppins', sans-serif;
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Poppins', 'sans-serif'],
+              outfit: ['Outfit', 'sans-serif'],
+            }
+          }
+        },
+        plugins: [
+          function({ addVariant }) {
+            addVariant('light', '.light-mode &')
+          }
+        ]
       }
-      body.light-mode .admin-layout {
-        background: #f8fafc;
-      }
-      .admin-sidebar {
-        width: 260px;
-        background: #111827;
-        border-right: 1px solid rgba(255,255,255,0.06);
-        padding: 30px 20px;
-        display: flex;
-        flex-direction: column;
-        gap: 25px;
-      }
-      body.light-mode .admin-sidebar {
-        background: #fff;
-        border-right-color: rgba(0,0,0,0.08);
-      }
-      .admin-logo {
-        font-family: 'Outfit', sans-serif;
-        font-weight: 800;
-        font-size: 1.4rem;
-        color: #e0a730;
-        text-align: center;
-        margin-bottom: 20px;
-      }
-      body.light-mode .admin-logo {
-        color: #204180;
-      }
-      .admin-nav {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-      }
-      .admin-nav-btn {
-        background: none;
-        border: none;
-        padding: 12px 16px;
-        color: #9ca3af;
-        text-align: left;
-        font-family: inherit;
-        font-size: 0.95rem;
-        font-weight: 600;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.25s ease;
-      }
-      body.light-mode .admin-nav-btn {
-        color: #475569;
-      }
-      .admin-nav-btn:hover {
-        background: rgba(255,255,255,0.04);
-        color: #fff;
-      }
-      body.light-mode .admin-nav-btn:hover {
-        background: #f1f5f9;
-        color: #0f172a;
-      }
-      .admin-nav-btn.active {
-        background: rgba(224, 167, 48, 0.1);
-        color: #e0a730;
-      }
-      body.light-mode .admin-nav-btn.active {
-        background: rgba(32, 65, 128, 0.08);
-        color: #204180;
-      }
-      .admin-main {
-        flex: 1;
-        padding: 40px;
-        overflow-y: auto;
-      }
-      .admin-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 40px;
-        border-bottom: 1px solid rgba(255,255,255,0.06);
-        padding-bottom: 20px;
-      }
-      body.light-mode .admin-header {
-        border-bottom-color: rgba(0,0,0,0.08);
-      }
-      .admin-title {
-        font-family: 'Outfit', sans-serif;
-        font-size: 1.8rem;
-        font-weight: 800;
-        color: #fff;
-        margin: 0;
-      }
-      body.light-mode .admin-title {
-        color: #0f172a;
-      }
-      .admin-login-card {
-        max-width: 400px;
-        margin: 100px auto;
-        background: #111827;
-        border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 16px;
-        padding: 40px;
-        box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-      }
-      body.light-mode .admin-login-card {
-        background: #fff;
-        border-color: rgba(0,0,0,0.08);
-        box-shadow: 0 15px 35px rgba(0,0,0,0.05);
-      }
-      .admin-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-        background: rgba(255,255,255,0.01);
-        border-radius: 12px;
-        overflow: hidden;
-      }
-      .admin-table th, .admin-table td {
-        padding: 14px 20px;
-        text-align: left;
-        border-bottom: 1px solid rgba(255,255,255,0.05);
-      }
-      body.light-mode .admin-table td, body.light-mode .admin-table th {
-        border-bottom-color: rgba(0,0,0,0.06);
-      }
-      .admin-table th {
-        background: rgba(255,255,255,0.03);
-        color: #e0a730;
-        font-weight: 600;
-      }
-      body.light-mode .admin-table th {
-        background: #f1f5f9;
-        color: #204180;
-      }
-      .admin-table td {
-        color: #d1d5db;
-        font-size: 0.92rem;
-      }
-      body.light-mode .admin-table td {
-        color: #334155;
-      }
-      .action-badge {
-        display: inline-block;
-        padding: 5px 12px;
-        border-radius: 999px;
-        font-size: 0.75rem;
-        font-weight: 700;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        width: 75px;
-        text-align: center;
-      }
-      .badge-approve {
-        background: rgba(16, 185, 129, 0.15);
-        color: #10b981;
-        border: 1px solid rgba(16, 185, 129, 0.2);
-        margin: 4px 8px 4px 0;
-      }
-      .badge-approve:hover {
-        background: #10b981;
-        color: #fff;
-      }
-      .badge-reject {
-        background: rgba(239, 68, 68, 0.15);
-        color: #ef4242;
-        border: 1px solid rgba(239, 68, 68, 0.2);
-        margin: 4px 0;
-      }
-      .badge-reject:hover {
-        background: #ef4242;
-        color: #fff;
-      }
-      .badge-edit {
-        background: rgba(224, 167, 48, 0.15);
-        color: #e0a730;
-        border: 1px solid rgba(224, 167, 48, 0.2);
-        margin: 4px 8px 4px 0;
-      }
-      .badge-edit:hover {
-        background: #e0a730;
-        color: #111;
-      }
-      body.light-mode .badge-edit {
-        background: rgba(32, 65, 128, 0.08);
-        color: #204180;
-        border-color: rgba(32, 65, 128, 0.15);
-      }
-      body.light-mode .badge-edit:hover {
-        background: #204180;
-        color: #fff;
-      }
-
-      /* KPI / Stats Styling */
-      .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-        gap: 12px;
-        margin-bottom: 20px;
-      }
-      .stat-card {
-        background: #111827;
-        border: 1px solid rgba(255,255,255,0.06);
-        border-radius: 8px;
-        padding: 12px 16px;
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      }
-      body.light-mode .stat-card {
-        background: #fff;
-        border-color: rgba(0,0,0,0.08);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-      }
-      .stat-label {
-        font-size: 0.78rem;
-        color: #9ca3af;
-        font-weight: 600;
-      }
-      body.light-mode .stat-label {
-        color: #64748b;
-      }
-      .stat-val {
-        font-size: 1.35rem;
-        font-weight: 700;
-        font-family: 'Outfit', sans-serif;
-        color: #e0a730;
-      }
-      body.light-mode .stat-val {
-        color: #204180;
-      }
-
-      /* Form Grid Overrides */
-      .form-grid-2col {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 15px;
-      }
-      .form-field {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-      }
-      .form-field-span-2 {
-        grid-column: span 1;
-      }
-      @media(min-width: 600px) {
-        .form-grid-2col {
-          grid-template-columns: 1fr 1fr;
+    </script>
+    <style type="text/tailwindcss">
+      @layer utilities {
+        .admin-nav-btn {
+          @apply bg-none border-none py-3 px-4 text-[#9ca3af] text-left font-sans text-[0.95rem] font-semibold rounded-lg cursor-pointer transition-all hover:bg-[rgba(255,255,255,0.04)] hover:text-white light:text-[#475569] light:hover:bg-[#f1f5f9] light:hover:text-[#0f172a];
         }
-        .form-field-span-2 {
-          grid-column: span 2;
+        .admin-nav-btn.active {
+          @apply bg-[rgba(224, 167, 48, 0.1)] text-[#e0a730] light:bg-[rgba(32, 65, 128, 0.08)] light:text-[#204180];
         }
-      }
-      .form-field label {
-        font-size: 0.8rem;
-        font-weight: 600;
-        color: #9ca3af;
-        margin-bottom: 2px;
-      }
-      body.light-mode .form-field label {
-        color: #64748b;
-      }
-      .form-field input, .form-field select, .form-field textarea {
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(255,255,255,0.1);
-        padding: 10px 14px;
-        border-radius: 8px;
-        color: #fff;
-        outline: none;
-        transition: border 0.2s ease;
-      }
-      body.light-mode .form-field input, body.light-mode .form-field select, body.light-mode .form-field textarea {
-        background: #f8fafc;
-        border-color: rgba(0,0,0,0.08);
-        color: #0f172a;
-      }
-      .form-field input:focus, .form-field select:focus, .form-field textarea:focus {
-        border-color: #e0a730;
-      }
-      body.light-mode .form-field input:focus, body.light-mode .form-field select:focus, body.light-mode .form-field textarea:focus {
-        border-color: #204180;
-      }
-      .form-field select option {
-        background: #111827;
-        color: #fff;
-      }
-      body.light-mode .form-field select option {
-        background: #fff;
-        color: #0f172a;
-      }
-
-      /* Buttons overrides */
-      .btn-primary {
-        background: #e0a730;
-        color: #111;
-        border: none;
-        padding: 11px 22px;
-        border-radius: 8px;
-        font-weight: 700;
-        transition: all 0.25s ease;
-      }
-      .btn-primary:hover {
-        background: #c99324;
-        box-shadow: 0 4px 15px rgba(224, 167, 48, 0.2);
-      }
-      body.light-mode .btn-primary {
-        background: #204180;
-        color: #fff;
-      }
-      body.light-mode .btn-primary:hover {
-        background: #173266;
-        box-shadow: 0 4px 15px rgba(32, 65, 128, 0.2);
-      }
-      .btn-secondary {
-        background: rgba(255,255,255,0.05);
-        color: #d1d5db;
-        border: 1px solid rgba(255,255,255,0.1);
-        padding: 10px 22px;
-        border-radius: 8px;
-        font-weight: 600;
-        transition: all 0.25s ease;
-      }
-      .btn-secondary:hover {
-        background: rgba(255,255,255,0.08);
-        color: #fff;
-      }
-      body.light-mode .btn-secondary {
-        background: #f1f5f9;
-        color: #475569;
-        border-color: rgba(0,0,0,0.06);
-      }
-      body.light-mode .btn-secondary:hover {
-        background: #e2e8f0;
-        color: #0f172a;
-      }
-
-      /* Modal Overlay Style */
-      .modal-overlay {
-        position: fixed;
-        top: 0; left: 0; right: 0; bottom: 0;
-        background: rgba(0,0,0,0.6);
-        backdrop-filter: blur(4px);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
-        padding: 20px;
-      }
-      .modal-card {
-        background: #111827;
-        border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 16px;
-        padding: 30px;
-        max-width: 600px;
-        width: 100%;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-        max-height: 90vh;
-        overflow-y: auto;
-      }
-      body.light-mode .modal-card {
-        background: #fff;
-        border-color: rgba(0,0,0,0.08);
-        box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-      }
-      .modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 25px;
-        border-bottom: 1px solid rgba(255,255,255,0.06);
-        padding-bottom: 15px;
-      }
-      body.light-mode .modal-header {
-        border-bottom-color: rgba(0,0,0,0.08);
-      }
-      .modal-header h3 {
-        font-family: 'Outfit', sans-serif;
-        font-weight: 700;
-        color: #e0a730;
-        margin: 0;
-      }
-      body.light-mode .modal-header h3 {
-        color: #204180;
-      }
-      .close-btn {
-        font-size: 1.8rem;
-        cursor: pointer;
-        color: #9ca3af;
-        line-height: 1;
-        transition: color 0.2s ease;
-      }
-      .close-btn:hover {
-        color: #fff;
-      }
-      body.light-mode .close-btn:hover {
-        color: #0f172a;
-      }
-      .custom-dialog-text {
-        font-size: 0.95rem;
-        line-height: 1.5;
-        color: #cbd5e1;
-        margin-bottom: 20px;
-      }
-      body.light-mode .custom-dialog-text {
-        color: #334155;
-      }
-      .filter-input {
-        width: 100%;
-        padding: 10px 14px;
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(255,255,255,0.1);
-        border-radius: 8px;
-        color: #fff;
-        outline: none;
-        transition: border-color 0.25s;
-        font-family: inherit;
-      }
-      .filter-input:focus {
-        border-color: #e0a730;
-      }
-      body.light-mode .filter-input {
-        background: #fff;
-        border-color: rgba(0,0,0,0.08);
-        color: #0f172a;
-      }
-      body.light-mode .filter-input:focus {
-        border-color: #204180;
-      }
-      .filter-input option {
-        background: #111827;
-        color: #fff;
-      }
-      body.light-mode .filter-input option {
-        background: #fff;
-        color: #0f172a;
+        .action-badge {
+          @apply inline-block py-1 px-3 rounded-full text-[0.75rem] font-bold cursor-pointer transition-all w-[75px] text-center;
+        }
+        .badge-approve {
+          @apply bg-[rgba(16,185,129,0.15)] text-[#10b981] border border-[rgba(16,185,129,0.2)] hover:bg-[#10b981] hover:text-white mr-1 my-1;
+        }
+        .badge-reject {
+          @apply bg-[rgba(239,68,68,0.15)] text-[#ef4242] border border-[rgba(239,68,68,0.2)] hover:bg-[#ef4242] hover:text-white my-1;
+        }
+        .badge-edit {
+          @apply bg-[rgba(224, 167, 48, 0.15)] text-[#e0a730] border border-[rgba(224, 167, 48, 0.2)] hover:bg-[#e0a730] hover:text-[#111] light:bg-[rgba(32, 65, 128, 0.08)] light:text-[#204180] light:border-[rgba(32, 65, 128, 0.15)] light:hover:bg-[#204180] light:hover:text-white mr-1 my-1;
+        }
       }
     </style>
   </head>
 
-  <body>
+  <body class="font-sans bg-[#0b0f19] text-[#e2e8f0] antialiased">
     <!-- LOGIN INTERFACE -->
-    <div id="loginScreen">
-      <div class="admin-login-card">
-        <h2 style="text-align: center; margin-bottom: 25px; font-family: 'Outfit', sans-serif; color: #fff;">Admin Portal</h2>
-        <form id="adminLoginForm" class="form-grid">
-          <div class="form-field form-field-full">
-            <label for="username">Username</label>
-            <input type="text" id="username" required />
+    <div id="loginScreen" class="min-h-screen flex items-center justify-center bg-[#0b0f19] light:bg-[#f8fafc]">
+      <div class="w-full max-w-[400px] bg-[#111827] border border-[rgba(255,255,255,0.08)] rounded-2xl p-10 shadow-[0_15px_35px_rgba(0,0,0,0.4)] light:bg-white light:border-[rgba(0,0,0,0.08)] light:shadow-[0_15px_35px_rgba(0,0,0,0.05)]">
+        <h2 class="text-center mb-6 font-outfit text-white text-2xl font-bold light:text-[#0f172a]">Admin Portal</h2>
+        <form id="adminLoginForm" class="grid grid-cols-1 gap-[15px]">
+          <div class="flex flex-col gap-1.5 w-full">
+            <label for="username" class="text-xs font-semibold text-[#9ca3af] light:text-[#64748b]">Username</label>
+            <input type="text" id="username" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-2.5 rounded-lg text-white outline-none focus:border-[#e0a730] transition-colors light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" required />
           </div>
-          <div class="form-field form-field-full">
-            <label for="password">Password</label>
-            <input type="password" id="password" required />
+          <div class="flex flex-col gap-1.5 w-full">
+            <label for="password" class="text-xs font-semibold text-[#9ca3af] light:text-[#64748b]">Password</label>
+            <input type="password" id="password" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-2.5 rounded-lg text-white outline-none focus:border-[#e0a730] transition-colors light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" required />
           </div>
-          <div class="form-field-full" style="margin-top: 15px;">
-            <button type="submit" class="btn-primary" style="width: 100%;">Login Dashboard</button>
+          <div class="w-full mt-4">
+            <button type="submit" class="w-full bg-[#e0a730] hover:bg-[#c99324] hover:shadow-[0_4px_15px_rgba(224,167,48,0.2)] text-[#111] font-bold py-[11px] px-[22px] rounded-lg transition-all light:bg-[#204180] light:text-white light:hover:bg-[#173266] light:hover:shadow-[0_4px_15px_rgba(32,65,128,0.2)]">Login Dashboard</button>
           </div>
         </form>
       </div>
     </div>
 
     <!-- MAIN DASHBOARD -->
-    <div id="dashboardScreen" class="admin-layout" style="display: none;">
+    <div id="dashboardScreen" class="flex min-h-screen bg-[#0b0f19] light:bg-[#f8fafc]" style="display: none;">
       <!-- Sidebar -->
-      <aside class="admin-sidebar">
-        <div class="admin-logo">SSSAM Admin</div>
-        <nav class="admin-nav">
+      <aside class="w-[260px] bg-[#111827] border-r border-[rgba(255,255,255,0.06)] p-[30px_20px] flex flex-col gap-[25px] light:bg-white light:border-[rgba(0,0,0,0.08)]">
+        <div class="font-outfit font-extrabold text-2xl text-[#e0a730] text-center mb-5 light:text-[#204180]">SSSAM Admin</div>
+        <nav class="flex flex-col gap-2">
           <button class="admin-nav-btn active" data-panel="applications">Applications</button>
           <button class="admin-nav-btn" data-panel="certificates">Certificates</button>
           <button class="admin-nav-btn" data-panel="enquiries">Enquiries</button>
@@ -495,173 +89,174 @@
           <button class="admin-nav-btn" data-panel="notes">Study Notes</button>
           <button class="admin-nav-btn" data-panel="settings">General Settings</button>
         </nav>
-        <button id="btnLogout" class="btn-secondary" style="margin-top: auto; width: 100%;">Logout</button>
+        <button id="btnLogout" class="bg-[rgba(255,255,255,0.05)] text-[#d1d5db] border border-[rgba(255,255,255,0.1)] py-2.5 px-[22px] font-semibold rounded-lg hover:bg-[rgba(255,255,255,0.08)] hover:text-white transition-all mt-auto w-full light:bg-[#f1f5f9] light:text-[#475569] light:border-[rgba(0,0,0,0.06)] light:hover:bg-[#e2e8f0] light:hover:text-[#0f172a]">Logout</button>
       </aside>
 
       <!-- Main Content -->
-      <main class="admin-main">
-        <div class="admin-header">
-          <h1 id="panelTitle" class="admin-title">Manage Applications</h1>
+      <main class="flex-1 p-10 overflow-y-auto">
+        <div class="flex justify-between items-center mb-10 border-b border-[rgba(255,255,255,0.06)] pb-5 light:border-[rgba(0,0,0,0.08)]">
+          <h1 id="panelTitle" class="font-outfit text-[1.8rem] font-extrabold text-white m-0 light:text-[#0f172a]">Manage Applications</h1>
         </div>
 
         <!-- STATS KPI COUNTERS -->
-        <div class="stats-grid" id="statsGrid">
-          <div class="stat-card">
-            <span class="stat-label">Total Applications</span>
-            <span class="stat-val" id="stat-total">-</span>
+        <div class="grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-3 mb-5" id="statsGrid">
+          <div class="bg-[#111827] border border-[rgba(255,255,255,0.06)] rounded-lg p-[12px_16px] flex flex-col gap-1 shadow-[0_4px_12px_rgba(0,0,0,0.15)] light:bg-white light:border-[rgba(0,0,0,0.08)] light:shadow-[0_4px_12px_rgba(0,0,0,0.03)]">
+            <span class="text-[0.78rem] text-[#9ca3af] font-semibold light:text-[#64748b]">Total Applications</span>
+            <span class="text-[1.35rem] font-bold font-outfit text-[#e0a730] light:text-[#204180]" id="stat-total">-</span>
           </div>
-          <div class="stat-card">
-            <span class="stat-label">Pending Approval</span>
-            <span class="stat-val" id="stat-pending">-</span>
+          <div class="bg-[#111827] border border-[rgba(255,255,255,0.06)] rounded-lg p-[12px_16px] flex flex-col gap-1 shadow-[0_4px_12px_rgba(0,0,0,0.15)] light:bg-white light:border-[rgba(0,0,0,0.08)] light:shadow-[0_4px_12px_rgba(0,0,0,0.03)]">
+            <span class="text-[0.78rem] text-[#9ca3af] font-semibold light:text-[#64748b]">Pending Approval</span>
+            <span class="text-[1.35rem] font-bold font-outfit text-[#e0a730] light:text-[#204180]" id="stat-pending">-</span>
           </div>
-          <div class="stat-card">
-            <span class="stat-label">Approved Certificates</span>
-            <span class="stat-val" id="stat-approved">-</span>
+          <div class="bg-[#111827] border border-[rgba(255,255,255,0.06)] rounded-lg p-[12px_16px] flex flex-col gap-1 shadow-[0_4px_12px_rgba(0,0,0,0.15)] light:bg-white light:border-[rgba(0,0,0,0.08)] light:shadow-[0_4px_12px_rgba(0,0,0,0.03)]">
+            <span class="text-[0.78rem] text-[#9ca3af] font-semibold light:text-[#64748b]">Approved Certificates</span>
+            <span class="text-[1.35rem] font-bold font-outfit text-[#e0a730] light:text-[#204180]" id="stat-approved">-</span>
           </div>
-          <div class="stat-card">
-            <span class="stat-label">Total Enquiries</span>
-            <span class="stat-val" id="stat-enquiries">-</span>
+          <div class="bg-[#111827] border border-[rgba(255,255,255,0.06)] rounded-lg p-[12px_16px] flex flex-col gap-1 shadow-[0_4px_12px_rgba(0,0,0,0.15)] light:bg-white light:border-[rgba(0,0,0,0.08)] light:shadow-[0_4px_12px_rgba(0,0,0,0.03)]">
+            <span class="text-[0.78rem] text-[#9ca3af] font-semibold light:text-[#64748b]">Total Enquiries</span>
+            <span class="text-[1.35rem] font-bold font-outfit text-[#e0a730] light:text-[#204180]" id="stat-enquiries">-</span>
           </div>
         </div>
 
         <!-- PANEL: APPLICATIONS -->
         <section class="admin-panel-content" id="panel-applications">
-          <p style="color: #888;">List of student training and certification applications.</p>
-          <div style="display: flex; gap: 15px; margin: 15px 0 20px 0; flex-wrap: wrap;">
-            <div style="flex: 1; min-width: 200px;">
-              <input type="text" id="appSearchInput" class="filter-input" placeholder="Search by name, ID, course, phone..." oninput="filterApplications()" />
+          <p class="text-[#888]">List of student training and certification applications.</p>
+          <div class="flex gap-[15px] my-[15px] flex-wrap">
+            <div class="flex-1 min-w-[200px]">
+              <input type="text" id="appSearchInput" class="w-full p-[10px_14px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] rounded-lg text-white outline-none focus:border-[#e0a730] transition-colors font-sans light:bg-white light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" placeholder="Search by name, ID, course, phone..." oninput="filterApplications()" />
             </div>
-            <div style="width: 180px;">
-              <select id="appStatusFilter" class="filter-input" style="cursor: pointer;" onchange="loadApplications()">
-                <option value="">All Statuses</option>
-                <option value="Pending">Pending</option>
-                <option value="Approved">Approved</option>
-                <option value="Rejected">Rejected</option>
+            <div class="w-[180px]">
+              <select id="appStatusFilter" class="w-full p-[10px_14px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] rounded-lg text-white outline-none focus:border-[#e0a730] transition-colors font-sans light:bg-white light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180] cursor-pointer" onchange="loadApplications()">
+                <option value="" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">All Statuses</option>
+                <option value="Pending" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">Pending</option>
+                <option value="Approved" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">Approved</option>
+                <option value="Rejected" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">Rejected</option>
               </select>
             </div>
           </div>
-          <table class="admin-table">
+          <table class="w-full border-collapse mt-5 bg-[rgba(255,255,255,0.01)] rounded-xl overflow-hidden">
             <thead>
-              <tr>
-                <th>App ID</th>
-                <th>Name</th>
-                <th>Course</th>
-                <th>Type</th>
-                <th>Phone</th>
-                <th>Status</th>
-                <th>Actions</th>
+              <tr class="border-b border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.03)] text-[#e0a730] font-semibold light:border-[rgba(0,0,0,0.06)] light:bg-[#f1f5f9] light:text-[#204180]">
+                <th class="p-[14px_20px] text-left">App ID</th>
+                <th class="p-[14px_20px] text-left">Name</th>
+                <th class="p-[14px_20px] text-left">Course</th>
+                <th class="p-[14px_20px] text-left">Type</th>
+                <th class="p-[14px_20px] text-left">Phone</th>
+                <th class="p-[14px_20px] text-left">Status</th>
+                <th class="p-[14px_20px] text-left">Actions</th>
               </tr>
             </thead>
-            <tbody id="applicationsTableBody">
+            <tbody id="applicationsTableBody" class="text-[#d1d5db] text-[0.92rem] light:text-[#334155]">
               <tr>
-                <td colspan="7" style="text-align: center; color: #666;">Loading applications...</td>
+                <td colspan="7" class="p-[14px_20px] text-center text-[#666] border-b border-[rgba(255,255,255,0.05)] light:border-[rgba(0,0,0,0.06)]">Loading applications...</td>
               </tr>
             </tbody>
           </table>
-          <div class="pagination-container" id="appPagination" style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; font-size: 0.88rem; color: #9ca3af;">
+          <div class="pagination-container flex justify-between items-center mt-5 text-[0.88rem] text-[#9ca3af]" id="appPagination">
             <span id="appPaginationInfo">Showing page 1 of 1</span>
-            <div style="display: flex; gap: 8px;">
-              <button class="btn-secondary" onclick="changeAppPage(-1)" id="appPrevBtn" style="padding: 6px 14px; font-size: 0.8rem;">Previous</button>
-              <button class="btn-secondary" onclick="changeAppPage(1)" id="appNextBtn" style="padding: 6px 14px; font-size: 0.8rem;">Next</button>
+            <div class="flex gap-2">
+              <button class="bg-[rgba(255,255,255,0.05)] text-[#d1d5db] border border-[rgba(255,255,255,0.1)] py-1.5 px-3.5 font-semibold rounded-lg hover:bg-[rgba(255,255,255,0.08)] hover:text-white transition-all text-xs light:bg-[#f1f5f9] light:text-[#475569] light:border-[rgba(0,0,0,0.06)] light:hover:bg-[#e2e8f0] light:hover:text-[#0f172a]" onclick="changeAppPage(-1)" id="appPrevBtn">Previous</button>
+              <button class="bg-[rgba(255,255,255,0.05)] text-[#d1d5db] border border-[rgba(255,255,255,0.1)] py-1.5 px-3.5 font-semibold rounded-lg hover:bg-[rgba(255,255,255,0.08)] hover:text-white transition-all text-xs light:bg-[#f1f5f9] light:text-[#475569] light:border-[rgba(0,0,0,0.06)] light:hover:bg-[#e2e8f0] light:hover:text-[#0f172a]" onclick="changeAppPage(1)" id="appNextBtn">Next</button>
             </div>
           </div>
         </section>
 
         <!-- PANEL: CERTIFICATES -->
         <section class="admin-panel-content" id="panel-certificates" style="display: none;">
-          <p style="color: #888;">Verifiable certificates issued to students.</p>
-          <div style="display: flex; gap: 15px; margin: 15px 0 20px 0; flex-wrap: wrap;">
-            <div style="flex: 1; min-width: 200px;">
-              <input type="text" id="certSearchInput" class="filter-input" placeholder="Search by name, certificate number, course..." oninput="filterCertificates()" />
+          <p class="text-[#888]">Verifiable certificates issued to students.</p>
+          <div class="flex gap-[15px] my-[15px] flex-wrap">
+            <div class="flex-1 min-w-[200px]">
+              <input type="text" id="certSearchInput" class="w-full p-[10px_14px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] rounded-lg text-white outline-none focus:border-[#e0a730] transition-colors font-sans light:bg-white light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" placeholder="Search by name, certificate number, course..." oninput="filterCertificates()" />
             </div>
           </div>
-          <table class="admin-table">
+          <table class="w-full border-collapse mt-5 bg-[rgba(255,255,255,0.01)] rounded-xl overflow-hidden">
             <thead>
-              <tr>
-                <th>Cert Number</th>
-                <th>Name</th>
-                <th>Course</th>
-                <th>Issue Date</th>
-                <th>Status</th>
-                <th>Actions</th>
+              <tr class="border-b border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.03)] text-[#e0a730] font-semibold light:border-[rgba(0,0,0,0.06)] light:bg-[#f1f5f9] light:text-[#204180]">
+                <th class="p-[14px_20px] text-left">Cert Number</th>
+                <th class="p-[14px_20px] text-left">Name</th>
+                <th class="p-[14px_20px] text-left">Course</th>
+                <th class="p-[14px_20px] text-left">Issue Date</th>
+                <th class="p-[14px_20px] text-left">Status</th>
+                <th class="p-[14px_20px] text-left">Actions</th>
               </tr>
             </thead>
-            <tbody id="certificatesTableBody">
+            <tbody id="certificatesTableBody" class="text-[#d1d5db] text-[0.92rem] light:text-[#334155]">
               <tr>
-                <td colspan="6" style="text-align: center; color: #666;">Loading certificates...</td>
+                <td colspan="6" class="p-[14px_20px] text-center text-[#666] border-b border-[rgba(255,255,255,0.05)] light:border-[rgba(0,0,0,0.06)]">Loading certificates...</td>
               </tr>
             </tbody>
           </table>
-          <div class="pagination-container" id="certPagination" style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; font-size: 0.88rem; color: #9ca3af;">
+          <div class="pagination-container flex justify-between items-center mt-5 text-[0.88rem] text-[#9ca3af]" id="certPagination">
             <span id="certPaginationInfo">Showing page 1 of 1</span>
-            <div style="display: flex; gap: 8px;">
-              <button class="btn-secondary" onclick="changeCertPage(-1)" id="certPrevBtn" style="padding: 6px 14px; font-size: 0.8rem;">Previous</button>
-              <button class="btn-secondary" onclick="changeCertPage(1)" id="certNextBtn" style="padding: 6px 14px; font-size: 0.8rem;">Next</button>
+            <div class="flex gap-2">
+              <button class="bg-[rgba(255,255,255,0.05)] text-[#d1d5db] border border-[rgba(255,255,255,0.1)] py-1.5 px-3.5 font-semibold rounded-lg hover:bg-[rgba(255,255,255,0.08)] hover:text-white transition-all text-xs light:bg-[#f1f5f9] light:text-[#475569] light:border-[rgba(0,0,0,0.06)] light:hover:bg-[#e2e8f0] light:hover:text-[#0f172a]" onclick="changeCertPage(-1)" id="certPrevBtn">Previous</button>
+              <button class="bg-[rgba(255,255,255,0.05)] text-[#d1d5db] border border-[rgba(255,255,255,0.1)] py-1.5 px-3.5 font-semibold rounded-lg hover:bg-[rgba(255,255,255,0.08)] hover:text-white transition-all text-xs light:bg-[#f1f5f9] light:text-[#475569] light:border-[rgba(0,0,0,0.06)] light:hover:bg-[#e2e8f0] light:hover:text-[#0f172a]" onclick="changeCertPage(1)" id="certNextBtn">Next</button>
             </div>
           </div>
         </section>
 
         <!-- PANEL: ENQUIRIES -->
         <section class="admin-panel-content" id="panel-enquiries" style="display: none;">
-          <p style="color: #888;">List of course and center enquiries received.</p>
-          <div style="display: flex; gap: 15px; margin: 15px 0 20px 0; flex-wrap: wrap;">
-            <div style="flex: 1; min-width: 200px;">
-              <input type="text" id="enqSearchInput" class="filter-input" placeholder="Search by name, email, phone..." oninput="filterEnquiries()" />
+          <p class="text-[#888]">List of course and center enquiries received.</p>
+          <div class="flex gap-[15px] my-[15px] flex-wrap">
+            <div class="flex-1 min-w-[200px]">
+              <input type="text" id="enqSearchInput" class="w-full p-[10px_14px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] rounded-lg text-white outline-none focus:border-[#e0a730] transition-colors font-sans light:bg-white light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" placeholder="Search by name, email, phone..." oninput="filterEnquiries()" />
             </div>
-            <div style="width: 180px;">
-              <select id="enqStatusFilter" class="filter-input" style="cursor: pointer;" onchange="loadEnquiries()">
-                <option value="">All Statuses</option>
-                <option value="Received">Received</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Closed">Closed</option>
+            <div class="w-[180px]">
+              <select id="enqStatusFilter" class="w-full p-[10px_14px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] rounded-lg text-white outline-none focus:border-[#e0a730] transition-colors font-sans light:bg-white light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180] cursor-pointer" onchange="loadEnquiries()">
+                <option value="" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">All Statuses</option>
+                <option value="Received" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">Received</option>
+                <option value="In Progress" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">In Progress</option>
+                <option value="Closed" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">Closed</option>
               </select>
             </div>
           </div>
-          <table class="admin-table">
+          <table class="w-full border-collapse mt-5 bg-[rgba(255,255,255,0.01)] rounded-xl overflow-hidden">
             <thead>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Message</th>
-                <th>Status</th>
+              <tr class="border-b border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.03)] text-[#e0a730] font-semibold light:border-[rgba(0,0,0,0.06)] light:bg-[#f1f5f9] light:text-[#204180]">
+                <th class="p-[14px_20px] text-left">Name</th>
+                <th class="p-[14px_20px] text-left">Email</th>
+                <th class="p-[14px_20px] text-left">Phone</th>
+                <th class="p-[14px_20px] text-left">Message</th>
+                <th class="p-[14px_20px] text-left">Status</th>
               </tr>
             </thead>
-            <tbody id="enquiriesTableBody">
+            <tbody id="enquiriesTableBody" class="text-[#d1d5db] text-[0.92rem] light:text-[#334155]">
               <tr>
-                <td colspan="5" style="text-align: center; color: #666;">Loading enquiries...</td>
+                <td colspan="5" class="p-[14px_20px] text-center text-[#666] border-b border-[rgba(255,255,255,0.05)] light:border-[rgba(0,0,0,0.06)]">Loading enquiries...</td>
               </tr>
             </tbody>
           </table>
-          <div class="pagination-container" id="enqPagination" style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; font-size: 0.88rem; color: #9ca3af;">
+          <div class="pagination-container flex justify-between items-center mt-5 text-[0.88rem] text-[#9ca3af]" id="enqPagination">
             <span id="enqPaginationInfo">Showing page 1 of 1</span>
-            <div style="display: flex; gap: 8px;">
-              <button class="btn-secondary" onclick="changeEnqPage(-1)" id="enqPrevBtn" style="padding: 6px 14px; font-size: 0.8rem;">Previous</button>
-              <button class="btn-secondary" onclick="changeEnqPage(1)" id="enqNextBtn" style="padding: 6px 14px; font-size: 0.8rem;">Next</button>
+            <div class="flex gap-2">
+              <button class="bg-[rgba(255,255,255,0.05)] text-[#d1d5db] border border-[rgba(255,255,255,0.1)] py-1.5 px-3.5 font-semibold rounded-lg hover:bg-[rgba(255,255,255,0.08)] hover:text-white transition-all text-xs light:bg-[#f1f5f9] light:text-[#475569] light:border-[rgba(0,0,0,0.06)] light:hover:bg-[#e2e8f0] light:hover:text-[#0f172a]" onclick="changeEnqPage(-1)" id="enqPrevBtn">Previous</button>
+              <button class="bg-[rgba(255,255,255,0.05)] text-[#d1d5db] border border-[rgba(255,255,255,0.1)] py-1.5 px-3.5 font-semibold rounded-lg hover:bg-[rgba(255,255,255,0.08)] hover:text-white transition-all text-xs light:bg-[#f1f5f9] light:text-[#475569] light:border-[rgba(0,0,0,0.06)] light:hover:bg-[#e2e8f0] light:hover:text-[#0f172a]" onclick="changeEnqPage(1)" id="enqNextBtn">Next</button>
             </div>
           </div>
         </section>
+        
         <!-- PANEL: PLACEMENTS -->
         <section class="admin-panel-content" id="panel-placements" style="display: none;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <p style="color: #888;">Manage student placements, package details, and company listings.</p>
-            <button class="btn-primary" onclick="openAddPlacementModal()">+ Add Placement</button>
+          <div class="flex justify-between items-center mb-5">
+            <p class="text-[#888]">Manage student placements, package details, and company listings.</p>
+            <button class="bg-[#e0a730] text-[#111] border-none py-[11px] px-[22px] rounded-lg font-bold hover:bg-[#c99324] hover:shadow-[0_4px_15px_rgba(224,167,48,0.2)] transition-all light:bg-[#204180] light:text-white light:hover:bg-[#173266] light:hover:shadow-[0_4px_15px_rgba(32,65,128,0.2)]" onclick="openAddPlacementModal()">+ Add Placement</button>
           </div>
-          <table class="admin-table">
+          <table class="w-full border-collapse mt-5 bg-[rgba(255,255,255,0.01)] rounded-xl overflow-hidden">
             <thead>
-              <tr>
-                <th>Student Name</th>
-                <th>Company</th>
-                <th>Package (LPA)</th>
-                <th>Designation</th>
-                <th>Year</th>
-                <th>Show/Hide</th>
-                <th>Actions</th>
+              <tr class="border-b border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.03)] text-[#e0a730] font-semibold light:border-[rgba(0,0,0,0.06)] light:bg-[#f1f5f9] light:text-[#204180]">
+                <th class="p-[14px_20px] text-left">Student Name</th>
+                <th class="p-[14px_20px] text-left">Company</th>
+                <th class="p-[14px_20px] text-left">Package (LPA)</th>
+                <th class="p-[14px_20px] text-left">Designation</th>
+                <th class="p-[14px_20px] text-left">Year</th>
+                <th class="p-[14px_20px] text-left">Show/Hide</th>
+                <th class="p-[14px_20px] text-left">Actions</th>
               </tr>
             </thead>
-            <tbody id="placementsTableBody">
+            <tbody id="placementsTableBody" class="text-[#d1d5db] text-[0.92rem] light:text-[#334155]">
               <tr>
-                <td colspan="7" style="text-align: center; color: #666;">Loading placements...</td>
+                <td colspan="7" class="p-[14px_20px] text-center text-[#666] border-b border-[rgba(255,255,255,0.05)] light:border-[rgba(0,0,0,0.06)]">Loading placements...</td>
               </tr>
             </tbody>
           </table>
@@ -669,24 +264,24 @@
 
         <!-- PANEL: BLOGS -->
         <section class="admin-panel-content" id="panel-blogs" style="display: none;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <p style="color: #888;">Publish technical blogs and job hiring alerts with Grok AI helper.</p>
-            <button class="btn-primary" onclick="openAddBlogModal()">+ Create Post</button>
+          <div class="flex justify-between items-center mb-5">
+            <p class="text-[#888]">Publish technical blogs and job hiring alerts with Grok AI helper.</p>
+            <button class="bg-[#e0a730] text-[#111] border-none py-[11px] px-[22px] rounded-lg font-bold hover:bg-[#c99324] hover:shadow-[0_4px_15px_rgba(224,167,48,0.2)] transition-all light:bg-[#204180] light:text-white light:hover:bg-[#173266] light:hover:shadow-[0_4px_15px_rgba(32,65,128,0.2)]" onclick="openAddBlogModal()">+ Create Post</button>
           </div>
-          <table class="admin-table">
+          <table class="w-full border-collapse mt-5 bg-[rgba(255,255,255,0.01)] rounded-xl overflow-hidden">
             <thead>
-              <tr>
-                <th>Title</th>
-                <th>Type</th>
-                <th>Author</th>
-                <th>Status</th>
-                <th>Show/Hide</th>
-                <th>Actions</th>
+              <tr class="border-b border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.03)] text-[#e0a730] font-semibold light:border-[rgba(0,0,0,0.06)] light:bg-[#f1f5f9] light:text-[#204180]">
+                <th class="p-[14px_20px] text-left">Title</th>
+                <th class="p-[14px_20px] text-left">Type</th>
+                <th class="p-[14px_20px] text-left">Author</th>
+                <th class="p-[14px_20px] text-left">Status</th>
+                <th class="p-[14px_20px] text-left">Show/Hide</th>
+                <th class="p-[14px_20px] text-left">Actions</th>
               </tr>
             </thead>
-            <tbody id="blogsTableBody">
+            <tbody id="blogsTableBody" class="text-[#d1d5db] text-[0.92rem] light:text-[#334155]">
               <tr>
-                <td colspan="6" style="text-align: center; color: #666;">Loading blogs...</td>
+                <td colspan="6" class="p-[14px_20px] text-center text-[#666] border-b border-[rgba(255,255,255,0.05)] light:border-[rgba(0,0,0,0.06)]">Loading blogs...</td>
               </tr>
             </tbody>
           </table>
@@ -694,947 +289,355 @@
 
         <!-- PANEL: NOTES -->
         <section class="admin-panel-content" id="panel-notes" style="display: none;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <p style="color: #888;">Manage study materials, PDFs, slides, and view download leads.</p>
-            <div style="display: flex; gap: 10px;">
-              <button class="btn-secondary" onclick="openNotesLeadsModal()">📋 View Leads</button>
-              <button class="btn-primary" onclick="openAddNoteModal()">+ Add Study Note</button>
+          <div class="flex justify-between items-center mb-5">
+            <p class="text-[#888]">Manage study materials, PDFs, slides, and view download leads.</p>
+            <div class="flex gap-2.5">
+              <button class="bg-[rgba(255,255,255,0.05)] text-[#d1d5db] border border-[rgba(255,255,255,0.1)] py-2.5 px-[22px] font-semibold rounded-lg hover:bg-[rgba(255,255,255,0.08)] hover:text-white transition-all light:bg-[#f1f5f9] light:text-[#475569] light:border-[rgba(0,0,0,0.06)] light:hover:bg-[#e2e8f0] light:hover:text-[#0f172a]" onclick="openNotesLeadsModal()">📋 View Leads</button>
+              <button class="bg-[#e0a730] text-[#111] border-none py-[11px] px-[22px] rounded-lg font-bold hover:bg-[#c99324] hover:shadow-[0_4px_15px_rgba(224,167,48,0.2)] transition-all light:bg-[#204180] light:text-white light:hover:bg-[#173266] light:hover:shadow-[0_4px_15px_rgba(32,65,128,0.2)]" onclick="openAddNoteModal()">+ Add Study Note</button>
             </div>
           </div>
-          <table class="admin-table">
+          <table class="w-full border-collapse mt-5 bg-[rgba(255,255,255,0.01)] rounded-xl overflow-hidden">
             <thead>
-              <tr>
-                <th>Title</th>
-                <th>Category</th>
-                <th>Downloads</th>
-                <th>Show/Hide</th>
-                <th>Actions</th>
+              <tr class="border-b border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.03)] text-[#e0a730] font-semibold light:border-[rgba(0,0,0,0.06)] light:bg-[#f1f5f9] light:text-[#204180]">
+                <th class="p-[14px_20px] text-left">Title</th>
+                <th class="p-[14px_20px] text-left">Category</th>
+                <th class="p-[14px_20px] text-left">Downloads</th>
+                <th class="p-[14px_20px] text-left">Show/Hide</th>
+                <th class="p-[14px_20px] text-left">Actions</th>
               </tr>
             </thead>
-            <tbody id="notesTableBody">
+            <tbody id="notesTableBody" class="text-[#d1d5db] text-[0.92rem] light:text-[#334155]">
               <tr>
-                <td colspan="5" style="text-align: center; color: #666;">Loading study notes...</td>
+                <td colspan="5" class="p-[14px_20px] text-center text-[#666] border-b border-[rgba(255,255,255,0.05)] light:border-[rgba(0,0,0,0.06)]">Loading study notes...</td>
               </tr>
             </tbody>
           </table>
         </section>
 
-
         <!-- PANEL: SETTINGS -->
         <section class="admin-panel-content" id="panel-settings" style="display: none;">
-          <p style="color: #888; margin-bottom: 25px;">Configure global platform and onboarding guidelines settings.</p>
-          <div class="result-card" style="padding: 30px;">
-            <h3 style="color: #fff; margin-bottom: 20px;">Apply Process Video Guide</h3>
+          <p class="text-[#888] mb-6">Configure global platform and onboarding guidelines settings.</p>
+          <div class="bg-[#111827] border border-[rgba(255,255,255,0.06)] rounded-lg shadow-[0_4px_12px_rgba(0,0,0,0.15)] light:bg-white light:border-[rgba(0,0,0,0.08)] light:shadow-[0_4px_12px_rgba(0,0,0,0.03)] p-[30px]">
+            <h3 class="text-white text-lg font-bold mb-5 light:text-[#0f172a]">Apply Process Video Guide</h3>
             <form id="settingsForm">
-              <div class="form-field" style="margin-bottom: 20px;">
-                <label for="setGuideVideoUrl" style="color: #aaa; display: block; margin-bottom: 8px;">"How to Apply" Video Guide URL (Embed Link)</label>
-                <input type="url" id="setGuideVideoUrl" placeholder="e.g. https://www.youtube.com/embed/dQw4w9WgXcQ" style="width: 100%; padding: 10px 14px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; box-sizing: border-box;" required />
-                <small style="color: #666; display: block; margin-top: 5px;">Must be a valid YouTube/Vimeo embed URL.</small>
+              <div class="flex flex-col gap-1.5 mb-5">
+                <label for="setGuideVideoUrl" class="text-[#aaa] text-xs font-semibold display-block mb-2 light:text-[#64748b]">"How to Apply" Video Guide URL (Embed Link)</label>
+                <input type="url" id="setGuideVideoUrl" placeholder="e.g. https://www.youtube.com/embed/dQw4w9WgXcQ" class="w-full p-[10px_14px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180] box-border" required />
+                <small class="text-[#666] block mt-1.5">Must be a valid YouTube/Vimeo embed URL.</small>
               </div>
-              <button type="submit" class="btn-primary" style="width: 100%;">Save General Settings</button>
+              <button type="submit" class="w-full bg-[#e0a730] hover:bg-[#c99324] hover:shadow-[0_4px_15px_rgba(224,167,48,0.2)] text-[#111] font-bold py-[11px] px-[22px] rounded-lg transition-all light:bg-[#204180] light:text-white light:hover:bg-[#173266] light:hover:shadow-[0_4px_15px_rgba(32,65,128,0.2)]">Save General Settings</button>
             </form>
           </div>
         </section>
       </main>
     </div>
 
-    <script>
-      // Change base URL as needed to hook to Express backend port
-      window.APP_BASE_URL = window.location.port === '5000' ? window.location.origin : 'http://localhost:5000';
-
-      // Override native confirm and prompt with beautiful, centered custom modals
-      let dialogResolver = null;
-
-      window.confirm = function(message) {
-        return new Promise((resolve) => {
-          document.getElementById("customDialogTitle").textContent = "Confirm Action";
-          document.getElementById("customDialogBody").textContent = message;
-          document.getElementById("customDialogPromptContainer").style.display = "none";
-          document.getElementById("customDialogCancelBtn").style.display = "block";
-          document.getElementById("customDialogConfirmBtn").textContent = "Confirm";
-          
-          const modal = document.getElementById("customDialogModal");
-          modal.style.display = "flex";
-          
-          dialogResolver = (value) => {
-            modal.style.display = "none";
-            resolve(!!value);
-          };
-        });
-      };
-
-      window.prompt = function(message, defaultValue = "") {
-        return new Promise((resolve) => {
-          document.getElementById("customDialogTitle").textContent = "Enter Details";
-          document.getElementById("customDialogBody").textContent = message;
-          document.getElementById("customDialogPromptContainer").style.display = "block";
-          
-          const input = document.getElementById("customDialogInput");
-          input.value = defaultValue;
-          
-          document.getElementById("customDialogCancelBtn").style.display = "block";
-          document.getElementById("customDialogConfirmBtn").textContent = "Submit";
-          
-          const modal = document.getElementById("customDialogModal");
-          modal.style.display = "flex";
-          input.focus();
-          
-          dialogResolver = (value) => {
-            modal.style.display = "none";
-            if (value === null || value === false) {
-              resolve(null);
-            } else {
-              resolve(input.value);
-            }
-          };
-        });
-      };
-
-      window.resolveCustomDialog = function(val) {
-        if (dialogResolver) {
-          dialogResolver(val);
-          dialogResolver = null;
-        }
-      };
-
-      document.addEventListener("DOMContentLoaded", () => {
-        const token = localStorage.getItem("adminToken");
-        if (token) {
-          showDashboard();
-        }
-
-        // Login Handler
-        const loginForm = document.getElementById("adminLoginForm");
-        if (loginForm) {
-          loginForm.addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const username = document.getElementById("username").value;
-            const password = document.getElementById("password").value;
-
-            try {
-              const res = await fetch(`${window.APP_BASE_URL}/api/admin/auth/login`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username, password })
-              });
-              const data = await res.json();
-              if (!res.ok) throw new Error(data.message || "Login failed");
-
-              localStorage.setItem("adminToken", data.data.token);
-              showToast("Success", "Login successful!", false);
-              showDashboard();
-            } catch (err) {
-              showToast("Error", err.message, true);
-            }
-          });
-        }
-
-        // Logout
-        document.getElementById("btnLogout").addEventListener("click", () => {
-          localStorage.removeItem("adminToken");
-          location.reload();
-        });
-
-        // Tab switches
-        const navBtns = document.querySelectorAll(".admin-nav-btn");
-        const panels = document.querySelectorAll(".admin-panel-content");
-        const panelTitle = document.getElementById("panelTitle");
-
-        navBtns.forEach(btn => {
-          btn.addEventListener("click", () => {
-            navBtns.forEach(b => b.classList.remove("active"));
-            panels.forEach(p => p.style.display = "none");
-
-            btn.classList.add("active");
-            const panelId = `panel-${btn.getAttribute("data-tab") || btn.getAttribute("data-panel")}`;
-            document.getElementById(panelId).style.display = "block";
-            panelTitle.textContent = btn.textContent;
-
-            // Load panel data
-            if (panelId === "panel-applications") loadApplications();
-            if (panelId === "panel-certificates") loadCertificates();
-            if (panelId === "panel-enquiries") loadEnquiries();
-            if (panelId === "panel-settings") loadSettings();
-          });
-        });
-      });
-
-      function showDashboard() {
-        document.getElementById("loginScreen").style.display = "none";
-        document.getElementById("dashboardScreen").style.display = "flex";
-        loadApplications();
-        updateDashboardStats();
-      }
-
-      async function adminFetch(url, options = {}) {
-        const token = localStorage.getItem("adminToken");
-        const headers = Object.assign({
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        }, options.headers);
-
-        const res = await fetch(`${window.APP_BASE_URL}${url}`, Object.assign({}, options, { headers }));
-        if (res.status === 401) {
-          localStorage.removeItem("adminToken");
-          location.reload();
-        }
-        return res;
-      }
-
-      async function updateDashboardStats() {
-        try {
-          const [appRes, enqRes] = await Promise.all([
-            adminFetch("/api/admin/applications?limit=1000"),
-            adminFetch("/api/admin/enquiries?limit=1000")
-          ]);
-          
-          const appData = await appRes.json();
-          const enqData = await enqRes.json();
-          
-          const apps = appData.data || appData || [];
-          const enquiries = enqData.data || enqData || [];
-          
-          const totalApps = apps.length;
-          const pendingApps = apps.filter(a => a.status === "Pending").length;
-          const approvedApps = apps.filter(a => a.status === "Approved").length;
-          const totalEnquiries = enquiries.length;
-          
-          document.getElementById("stat-total").textContent = totalApps;
-          document.getElementById("stat-pending").textContent = pendingApps;
-          document.getElementById("stat-approved").textContent = approvedApps;
-          document.getElementById("stat-enquiries").textContent = totalEnquiries;
-        } catch (err) {
-          console.error("Failed to load dashboard stats:", err);
-        }
-      }
-      let currentAppPage = 1;
-      let currentCertPage = 1;
-      let currentEnqPage = 1;
-      const PAGE_LIMIT = 10;
-
-      window.changeAppPage = function(delta) {
-        currentAppPage += delta;
-        loadApplications();
-      };
-
-      window.changeCertPage = function(delta) {
-        currentCertPage += delta;
-        loadCertificates();
-      };
-
-      window.changeEnqPage = function(delta) {
-        currentEnqPage += delta;
-        loadEnquiries();
-      };
-
-      let searchTimeout;
-      function debounce(func, delay = 300) {
-        return function(...args) {
-          clearTimeout(searchTimeout);
-          searchTimeout = setTimeout(() => func.apply(this, args), delay);
-        };
-      }
-      
-      window.filterApplications = debounce(() => { currentAppPage = 1; loadApplications(); });
-      window.filterCertificates = debounce(() => { currentCertPage = 1; loadCertificates(); });
-      window.filterEnquiries = debounce(() => { currentEnqPage = 1; loadEnquiries(); });
-
-      async function loadApplications() {
-        const tbody = document.getElementById("applicationsTableBody");
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #888;">Loading applications...</td></tr>`;
-
-        const search = document.getElementById("appSearchInput")?.value || "";
-        const status = document.getElementById("appStatusFilter")?.value || "";
-        const query = new URLSearchParams({ search, status, page: currentAppPage, limit: PAGE_LIMIT }).toString();
-
-        try {
-          const res = await adminFetch(`/api/admin/applications?${query}`);
-          const result = await res.json();
-          const list = result.data || result;
-          const pagination = result.pagination || { page: 1, totalPages: 1, total: list.length };
-
-          if (!list || list.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #888;">No applications found.</td></tr>`;
-            document.getElementById("appPaginationInfo").textContent = "Showing page 1 of 1";
-            document.getElementById("appPrevBtn").disabled = true;
-            document.getElementById("appNextBtn").disabled = true;
-            return;
-          }
-
-          tbody.innerHTML = list.map(app => `
-            <tr>
-              <td><strong>${app.applicationId}</strong></td>
-              <td>${app.fullName}</td>
-              <td>${app.course}</td>
-              <td>${app.certificateType}</td>
-              <td>${app.phoneNumber}</td>
-              <td><span style="color: ${app.status === 'Approved' ? '#10b981' : (app.status === 'Rejected' ? '#ef4448' : '#e0a730')}">${app.status}</span></td>
-              <td>
-                <span class="action-badge badge-edit" onclick="openEditModal('${encodeURIComponent(JSON.stringify(app))}')">Edit</span>
-                ${app.status === "Pending" ? `
-                  <span class="action-badge badge-approve" onclick="approveApp('${app.applicationId}')">Approve</span>
-                  <span class="action-badge badge-reject" onclick="rejectApp('${app.applicationId}')">Reject</span>
-                ` : ``}
-              </td>
-            </tr>
-          `).join("");
-          
-          // Update pagination controls
-          currentAppPage = pagination.page;
-          document.getElementById("appPaginationInfo").textContent = `Page ${pagination.page} of ${pagination.totalPages} (${pagination.total} total)`;
-          document.getElementById("appPrevBtn").disabled = pagination.page <= 1;
-          document.getElementById("appNextBtn").disabled = pagination.page >= pagination.totalPages;
-
-          updateDashboardStats();
-        } catch (err) {
-          tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #ef5350;">Failed to load applications: ${err.message}</td></tr>`;
-        }
-      }
-
-      async function approveApp(appId) {
-        if (!await confirm(`Are you sure you want to approve application ${appId}? This generates a certificate number.`)) return;
-        try {
-          const res = await adminFetch(`/api/admin/applications/${appId}/approve`, { method: "PATCH" });
-          const data = await res.json();
-          if (!res.ok) throw new Error(data.message || "Approve failed");
-          showToast("Success", `Approved! Cert Number: ${data.data.certificateNumber}`, false);
-          loadApplications();
-          updateDashboardStats();
-        } catch (err) {
-          showToast("Error", err.message, true);
-        }
-      }
-
-      async function rejectApp(appId) {
-        const reason = await prompt("Enter rejection reason:");
-        if (reason === null) return;
-        try {
-          const res = await adminFetch(`/api/admin/applications/${appId}/reject`, {
-            method: "PATCH",
-            body: JSON.stringify({ remarks: reason })
-          });
-          const data = await res.json();
-          if (!res.ok) throw new Error(data.message || "Rejection failed");
-          showToast("Success", "Application rejected successfully.", false);
-          loadApplications();
-          updateDashboardStats();
-        } catch (err) {
-          showToast("Error", err.message, true);
-        }
-      }
-
-      async function loadCertificates() {
-        const tbody = document.getElementById("certificatesTableBody");
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #888;">Loading certificates...</td></tr>`;
-
-        const search = document.getElementById("certSearchInput")?.value || "";
-        const query = new URLSearchParams({ search, page: currentCertPage, limit: PAGE_LIMIT }).toString();
-
-        try {
-          const res = await adminFetch(`/api/admin/certificates?${query}`);
-          const result = await res.json();
-          const list = result.data || result;
-          const pagination = result.pagination || { page: 1, totalPages: 1, total: list.length };
-
-          if (!list || list.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #888;">No certificates found.</td></tr>`;
-            document.getElementById("certPaginationInfo").textContent = "Showing page 1 of 1";
-            document.getElementById("certPrevBtn").disabled = true;
-            document.getElementById("certNextBtn").disabled = true;
-            return;
-          }
-
-          tbody.innerHTML = list.map(cert => {
-            const app = cert.application || {};
-            const appPayload = {
-              applicationId: app.applicationId || cert.applicationId,
-              fullName: cert.fullName,
-              email: app.email || "",
-              phoneNumber: app.phoneNumber || "",
-              dateOfBirth: cert.dateOfBirth,
-              course: cert.course,
-              certificateType: cert.certificateType,
-              duration: cert.duration,
-              durationDates: app.durationDates || "",
-              qualification: cert.qualification || app.qualification || "",
-              organization: app.organization || ""
-            };
-            return `
-              <tr>
-                <td><strong>${cert.certificateNumber}</strong></td>
-                <td>${cert.fullName}</td>
-                <td>${cert.course}</td>
-                <td>${new Date(cert.issueDate).toLocaleDateString()}</td>
-                <td><span style="color: #10b981;">${cert.status || 'Active'}</span></td>
-                <td>
-                  <span class="action-badge badge-edit" onclick="openEditModal('${encodeURIComponent(JSON.stringify(appPayload))}')">Edit</span>
-                </td>
-              </tr>
-            `;
-          }).join("");
-
-          // Update pagination controls
-          currentCertPage = pagination.page;
-          document.getElementById("certPaginationInfo").textContent = `Page ${pagination.page} of ${pagination.totalPages} (${pagination.total} total)`;
-          document.getElementById("certPrevBtn").disabled = pagination.page <= 1;
-          document.getElementById("certNextBtn").disabled = pagination.page >= pagination.totalPages;
-        } catch (err) {
-          tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #ef5350;">Failed to load certificates: ${err.message}</td></tr>`;
-        }
-      }
-
-      async function loadEnquiries() {
-        const tbody = document.getElementById("enquiriesTableBody");
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #888;">Loading enquiries...</td></tr>`;
-
-        const search = document.getElementById("enqSearchInput")?.value || "";
-        const status = document.getElementById("enqStatusFilter")?.value || "";
-        const query = new URLSearchParams({ search, status, page: currentEnqPage, limit: PAGE_LIMIT }).toString();
-
-        try {
-          const res = await adminFetch(`/api/admin/enquiries?${query}`);
-          const result = await res.json();
-          const list = result.data || result;
-          const pagination = result.pagination || { page: 1, totalPages: 1, total: list.length };
-
-          if (!list || list.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #888;">No enquiries found.</td></tr>`;
-            document.getElementById("enqPaginationInfo").textContent = "Showing page 1 of 1";
-            document.getElementById("enqPrevBtn").disabled = true;
-            document.getElementById("enqNextBtn").disabled = true;
-            return;
-          }
-
-          tbody.innerHTML = list.map(e => `
-            <tr>
-              <td>${e.fullName || e.name}</td>
-              <td>${e.email}</td>
-              <td>${e.phoneNumber}</td>
-              <td>${e.message || 'N/A'}</td>
-              <td><span style="color: #888;">${e.status || 'Received'}</span></td>
-            </tr>
-          `).join("");
-
-          // Update pagination controls
-          currentEnqPage = pagination.page;
-          document.getElementById("enqPaginationInfo").textContent = `Page ${pagination.page} of ${pagination.totalPages} (${pagination.total} total)`;
-          document.getElementById("enqPrevBtn").disabled = pagination.page <= 1;
-          document.getElementById("enqNextBtn").disabled = pagination.page >= pagination.totalPages;
-        } catch (err) {
-          tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #ef5350;">Failed to load enquiries: ${err.message}</td></tr>`;
-        }
-      }
-
-      // ----------------------------------------------------
-      // EDIT MODAL CONTROLLER
-      // ----------------------------------------------------
-      let currentEditingApp = null;
-
-      window.openEditModal = function(appJsonStr) {
-        try {
-          const app = JSON.parse(decodeURIComponent(appJsonStr));
-          currentEditingApp = app;
-
-          document.getElementById("editAppId").value = app.applicationId;
-          document.getElementById("editFullName").value = app.fullName || "";
-          document.getElementById("editEmail").value = app.email || "";
-          document.getElementById("editPhone").value = app.phoneNumber || "";
-
-          if (app.dateOfBirth) {
-            const dob = new Date(app.dateOfBirth);
-            const yyyy = dob.getFullYear();
-            const mm = String(dob.getMonth() + 1).padStart(2, '0');
-            const dd = String(dob.getDate()).padStart(2, '0');
-            document.getElementById("editDob").value = `${yyyy}-${mm}-${dd}`;
-          } else {
-            document.getElementById("editDob").value = "";
-          }
-
-          if (app.issueDate) {
-            const issueDate = new Date(app.issueDate);
-            const yyyy = issueDate.getFullYear();
-            const mm = String(issueDate.getMonth() + 1).padStart(2, '0');
-            const dd = String(issueDate.getDate()).padStart(2, '0');
-            document.getElementById("editIssueDate").value = `${yyyy}-${mm}-${dd}`;
-          } else {
-            document.getElementById("editIssueDate").value = "";
-          }
-
-          let cleanCourse = app.course || "";
-          let organization = app.organization || "";
-          const firstParenOpen = cleanCourse.indexOf('(');
-          if (firstParenOpen > -1) {
-            let rawOrg = cleanCourse.substring(firstParenOpen + 1);
-            if (rawOrg.endsWith(')')) {
-              rawOrg = rawOrg.slice(0, -1);
-            }
-            if (!organization) {
-              organization = rawOrg.trim();
-            }
-            cleanCourse = cleanCourse.substring(0, firstParenOpen).trim();
-          }
-
-          let cleanDuration = app.duration || "";
-          let durationDates = app.durationDates || "";
-          if (cleanDuration.includes(" | Duration: ")) {
-            const parts = cleanDuration.split(" | Duration: ");
-            cleanDuration = parts[0].trim();
-            if (!durationDates) {
-              durationDates = parts[1].trim();
-            }
-          }
-
-          document.getElementById("editCourse").value = cleanCourse;
-          document.getElementById("editCertificateType").value = app.certificateType || "Training";
-
-          const durationSelect = document.getElementById("editDuration");
-          // Clear any dynamic/custom options we added previously
-          const customOpt = durationSelect.querySelector('option[data-custom="true"]');
-          if (customOpt) customOpt.remove();
-
-          durationSelect.value = cleanDuration;
-
-          // If the value was not set (i.e. not in the options), add it dynamically
-          if (cleanDuration && durationSelect.value !== cleanDuration) {
-            const opt = document.createElement("option");
-            opt.value = cleanDuration;
-            opt.textContent = cleanDuration;
-            opt.selected = true;
-            opt.setAttribute("data-custom", "true");
-            durationSelect.appendChild(opt);
-          }
-
-          document.getElementById("editDurationDates").value = durationDates;
-          document.getElementById("editQualification").value = app.qualification || "";
-          document.getElementById("editOrganization").value = organization;
-
-          document.getElementById("editModal").style.display = "flex";
-        } catch (err) {
-          showToast("Error", "Failed to open edit modal: " + err.message, true);
-        }
-      };
-
-      window.closeEditModal = function() {
-        document.getElementById("editModal").style.display = "none";
-        currentEditingApp = null;
-      };
-
-      document.addEventListener("DOMContentLoaded", () => {
-        const durationSelect = document.getElementById("editDuration");
-        if (durationSelect) {
-          durationSelect.addEventListener("change", function() {
-            if (this.value === "Other") {
-              const promptVal = window.prompt("Enter custom duration:");
-              if (promptVal && promptVal.trim()) {
-                const opt = document.createElement("option");
-                opt.value = promptVal.trim();
-                opt.textContent = promptVal.trim();
-                opt.selected = true;
-                opt.setAttribute("data-custom", "true");
-                durationSelect.appendChild(opt);
-              } else {
-                durationSelect.selectedIndex = 0;
-              }
-            }
-          });
-        }
-
-        const editForm = document.getElementById("editApplicationForm");
-        if (editForm) {
-          editForm.addEventListener("submit", async (e) => {
-            e.preventDefault();
-            if (!currentEditingApp) return;
-
-            const appId = document.getElementById("editAppId").value;
-            const payload = {
-              fullName: document.getElementById("editFullName").value.trim(),
-              email: document.getElementById("editEmail").value.trim(),
-              phoneNumber: document.getElementById("editPhone").value.trim(),
-              dateOfBirth: document.getElementById("editDob").value,
-              course: document.getElementById("editCourse").value.trim(),
-              certificateType: document.getElementById("editCertificateType").value,
-              duration: document.getElementById("editDuration").value.trim(),
-              durationDates: document.getElementById("editDurationDates").value.trim(),
-              qualification: document.getElementById("editQualification").value.trim(),
-              organization: document.getElementById("editOrganization").value.trim(),
-              issueDate: document.getElementById("editIssueDate").value
-            };
-
-            try {
-              const res = await adminFetch(`/api/admin/applications/${appId}/update`, {
-                method: "PATCH",
-                body: JSON.stringify(payload)
-              });
-
-              const data = await res.json();
-              if (!res.ok) throw new Error(data.message || "Failed to save edits");
-
-              showToast("Success", "Application updated successfully", false);
-              closeEditModal();
-              loadApplications();
-              loadCertificates();
-              updateDashboardStats();
-            } catch (err) {
-              showToast("Error", err.message, true);
-            }
-        }
-
-        // Settings Form Submission
-        const settingsForm = document.getElementById("settingsForm");
-        if (settingsForm) {
-          settingsForm.addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const val = document.getElementById("setGuideVideoUrl").value.trim();
-            try {
-              const res = await adminFetch("/api/admin/settings", {
-                method: "POST",
-                body: JSON.stringify({ key: "apply_guide_video_url", value: val })
-              });
-              const data = await res.json();
-              if (!res.ok) throw new Error(data.message || "Failed to save settings");
-              showToast("Success", "General settings saved successfully", false);
-            } catch (err) {
-              showToast("Error", err.message, true);
-            }
-          });
-        }
-      });
-
-      // Load Settings from Backend API
-      window.loadSettings = async function() {
-        try {
-          const res = await fetch(`${window.APP_BASE_URL}/api/settings/apply_guide_video_url`);
-          if (res.ok) {
-            const data = await res.json();
-            document.getElementById("setGuideVideoUrl").value = data.value || "";
-          }
-        } catch (err) {
-          console.error("Failed to load settings:", err);
-        }
-      };
-
-      function showToast(title, message, isError) {
-        if (typeof window.Toastify === "function") {
-          window.Toastify({
-            text: `${title}: ${message}`,
-            duration: 3500,
-            gravity: "top",
-            position: "right",
-            style: {
-              borderRadius: "8px",
-              background: isError ? "linear-gradient(135deg, #e94c4c, #b83434)" : "linear-gradient(135deg, #1f9d53, #15753d)"
-            }
-          }).showToast();
-        }
-      }
-    </script>
-
     <!-- EDIT APPLICATION MODAL -->
-    <div id="editModal" class="modal-overlay" style="display: none;">
-      <div class="modal-card">
-        <div class="modal-header">
-          <h3>Edit Application Details</h3>
-          <span class="close-btn" onclick="closeEditModal()">&times;</span>
+    <div id="editModal" class="fixed inset-0 bg-[rgba(0,0,0,0.6)] backdrop-blur-[4px] flex items-center justify-center z-[1000] p-5" style="display: none;">
+      <div class="bg-[#111827] border border-[rgba(255,255,255,0.08)] rounded-2xl p-[30px] max-w-[600px] w-full shadow-[0_20px_40px_rgba(0,0,0,0.5)] max-h-[90vh] overflow-y-auto light:bg-white light:border-[rgba(0,0,0,0.08)] light:shadow-[0_20px_40px_rgba(0,0,0,0.08)]">
+        <div class="flex justify-between items-center mb-6 border-b border-[rgba(255,255,255,0.06)] pb-4 light:border-[rgba(0,0,0,0.08)]">
+          <h3 class="font-outfit font-bold text-[#e0a730] text-lg light:text-[#204180]">Edit Application Details</h3>
+          <span class="text-[1.8rem] cursor-pointer text-[#9ca3af] leading-none transition-colors hover:text-white light:hover:text-[#0f172a]" onclick="closeEditModal()">&times;</span>
         </div>
-        <form id="editApplicationForm" class="form-grid-2col">
+        <form id="editApplicationForm" class="grid grid-cols-1 md:grid-cols-2 gap-[15px]">
           <input type="hidden" id="editAppId" />
           
-          <div class="form-field">
-            <label for="editFullName">Full Name</label>
-            <input type="text" id="editFullName" required />
+          <div class="flex flex-col gap-1.5">
+            <label for="editFullName" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Full Name</label>
+            <input type="text" id="editFullName" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" required />
           </div>
-          <div class="form-field">
-            <label for="editEmail">Email Address</label>
-            <input type="email" id="editEmail" required />
+          <div class="flex flex-col gap-1.5">
+            <label for="editEmail" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Email Address</label>
+            <input type="email" id="editEmail" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" required />
           </div>
-          <div class="form-field">
-            <label for="editPhone">Phone Number</label>
-            <input type="text" id="editPhone" required />
+          <div class="flex flex-col gap-1.5">
+            <label for="editPhone" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Phone Number</label>
+            <input type="text" id="editPhone" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" required />
           </div>
-          <div class="form-field">
-            <label for="editDob">Date of Birth</label>
-            <input type="date" id="editDob" required />
+          <div class="flex flex-col gap-1.5">
+            <label for="editDob" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Date of Birth</label>
+            <input type="date" id="editDob" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" required />
           </div>
-          <div class="form-field">
-            <label for="editIssueDate">Issue Date (Omit for Pending)</label>
-            <input type="date" id="editIssueDate" />
+          <div class="flex flex-col gap-1.5">
+            <label for="editIssueDate" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Issue Date (Omit for Pending)</label>
+            <input type="date" id="editIssueDate" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" />
           </div>
-          <div class="form-field">
-            <label for="editCourse">Course Name</label>
-            <input type="text" id="editCourse" required />
+          <div class="flex flex-col gap-1.5">
+            <label for="editCourse" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Course Name</label>
+            <input type="text" id="editCourse" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" required />
           </div>
-          <div class="form-field">
-            <label for="editCertificateType">Certificate Type</label>
-            <select id="editCertificateType" required>
-              <option value="Training">Training</option>
-              <option value="Workshop">Workshop</option>
-              <option value="Internship">Internship</option>
-              <option value="Industrial Training">Industrial Training</option>
-              <option value="Academic Training">Academic Training</option>
-              <option value="Corporate Training">Corporate Training</option>
+          <div class="flex flex-col gap-1.5">
+            <label for="editCertificateType" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Certificate Type</label>
+            <select id="editCertificateType" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" required>
+              <option value="Training" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">Training</option>
+              <option value="Workshop" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">Workshop</option>
+              <option value="Internship" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">Internship</option>
+              <option value="Industrial Training" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">Industrial Training</option>
+              <option value="Academic Training" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">Academic Training</option>
+              <option value="Corporate Training" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">Corporate Training</option>
             </select>
           </div>
-          <div class="form-field">
-            <label for="editDuration">Duration</label>
-            <select id="editDuration" required>
-              <option value="1 Month">1 Month</option>
-              <option value="2 Months">2 Months</option>
-              <option value="3 Months">3 Months</option>
-              <option value="6 Months">6 Months</option>
-              <option value="40 Hours">40 Hours</option>
-              <option value="80 Hours">80 Hours</option>
-              <option value="100 Hours">100 Hours</option>
-              <option value="120 Hours">120 Hours</option>
-              <option value="150 Hours">150 Hours</option>
-              <option value="200 Hours">200 Hours</option>
-              <option value="1 Day">1 Day</option>
-              <option value="2 Days">2 Days</option>
-              <option value="3 Days">3 Days</option>
-              <option value="5 Days">5 Days</option>
-              <option value="1 Week">1 Week</option>
-              <option value="Other">Other...</option>
+          <div class="flex flex-col gap-1.5">
+            <label for="editDuration" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Duration</label>
+            <select id="editDuration" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" required>
+              <option value="1 Month" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">1 Month</option>
+              <option value="2 Months" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">2 Months</option>
+              <option value="3 Months" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">3 Months</option>
+              <option value="6 Months" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">6 Months</option>
+              <option value="40 Hours" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">40 Hours</option>
+              <option value="80 Hours" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">80 Hours</option>
+              <option value="100 Hours" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">100 Hours</option>
+              <option value="120 Hours" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">120 Hours</option>
+              <option value="150 Hours" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">150 Hours</option>
+              <option value="200 Hours" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">200 Hours</option>
+              <option value="1 Day" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">1 Day</option>
+              <option value="2 Days" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">2 Days</option>
+              <option value="3 Days" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">3 Days</option>
+              <option value="5 Days" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">5 Days</option>
+              <option value="1 Week" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">1 Week</option>
+              <option value="Other" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">Other...</option>
             </select>
           </div>
-          <div class="form-field">
-            <label for="editDurationDates">Duration Date Range</label>
-            <input type="text" id="editDurationDates" placeholder="Omit for Workshops" />
+          <div class="flex flex-col gap-1.5">
+            <label for="editDurationDates" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Duration Date Range</label>
+            <input type="text" id="editDurationDates" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" placeholder="Omit for Workshops" />
           </div>
-          <div class="form-field">
-            <label for="editQualification">Qualification</label>
-            <input type="text" id="editQualification" placeholder="Omit for Workshops" />
+          <div class="flex flex-col gap-1.5">
+            <label for="editQualification" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Qualification</label>
+            <input type="text" id="editQualification" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" placeholder="Omit for Workshops" />
           </div>
-          <div class="form-field">
-            <label for="editOrganization">College / Corporate Organization</label>
-            <input type="text" id="editOrganization" placeholder="Omit for Workshops" />
+          <div class="flex flex-col gap-1.5">
+            <label for="editOrganization" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">College / Corporate Organization</label>
+            <input type="text" id="editOrganization" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" placeholder="Omit for Workshops" />
           </div>
           
-          <div class="form-field-span-2" style="display: flex; gap: 12px; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 20px;">
-            <button type="submit" class="btn-primary" style="flex: 1;">Save Changes</button>
-            <button type="button" class="btn-secondary" onclick="closeEditModal()" style="flex: 1;">Cancel</button>
+          <div class="col-span-1 md:col-span-2 flex gap-3 mt-5 border-t border-[rgba(255,255,255,0.06)] pt-5">
+            <button type="submit" class="flex-1 bg-[#e0a730] hover:bg-[#c99324] hover:shadow-[0_4px_15px_rgba(224,167,48,0.2)] text-[#111] font-bold py-[11px] px-[22px] rounded-lg transition-all light:bg-[#204180] light:text-white light:hover:bg-[#173266] light:hover:shadow-[0_4px_15px_rgba(32,65,128,0.2)]">Save Changes</button>
+            <button type="button" class="flex-1 bg-[rgba(255,255,255,0.05)] text-[#d1d5db] border border-[rgba(255,255,255,0.1)] py-[10px] px-[22px] font-semibold rounded-lg hover:bg-[rgba(255,255,255,0.08)] hover:text-white transition-all light:bg-[#f1f5f9] light:text-[#475569] light:border-[rgba(0,0,0,0.06)] light:hover:bg-[#e2e8f0] light:hover:text-[#0f172a]" onclick="closeEditModal()">Cancel</button>
           </div>
         </form>
       </div>
     </div>
 
     <!-- ADD/EDIT PLACEMENT MODAL -->
-    <div id="placementModal" class="modal-overlay" style="display: none;">
-      <div class="modal-card">
-        <div class="modal-header">
-          <h3 id="placementModalTitle">Add Placement Record</h3>
-          <span class="close-btn" onclick="closePlacementModal()">&times;</span>
+    <div id="placementModal" class="fixed inset-0 bg-[rgba(0,0,0,0.6)] backdrop-blur-[4px] flex items-center justify-center z-[1000] p-5" style="display: none;">
+      <div class="bg-[#111827] border border-[rgba(255,255,255,0.08)] rounded-2xl p-[30px] max-w-[600px] w-full shadow-[0_20px_40px_rgba(0,0,0,0.5)] max-h-[90vh] overflow-y-auto light:bg-white light:border-[rgba(0,0,0,0.08)] light:shadow-[0_20px_40px_rgba(0,0,0,0.08)]">
+        <div class="flex justify-between items-center mb-6 border-b border-[rgba(255,255,255,0.06)] pb-4 light:border-[rgba(0,0,0,0.08)]">
+          <h3 id="placementModalTitle" class="font-outfit font-bold text-[#e0a730] text-lg light:text-[#204180]">Add Placement Record</h3>
+          <span class="text-[1.8rem] cursor-pointer text-[#9ca3af] leading-none transition-colors hover:text-white light:hover:text-[#0f172a]" onclick="closePlacementModal()">&times;</span>
         </div>
-        <form id="placementForm" class="form-grid-2col">
+        <form id="placementForm" class="grid grid-cols-1 md:grid-cols-2 gap-[15px]">
           <input type="hidden" id="placementId" />
-          <div class="form-field-span-2" style="background: rgba(224, 167, 48, 0.05); padding: 14px; border-radius: 8px; margin-bottom: 10px; border: 1px solid rgba(224, 167, 48, 0.15); font-size: 0.85rem; color: #ccc; line-height: 1.5;">
-            <strong style="color: #e0a730; display: block; margin-bottom: 5px;">💡 SEO Guideline for Placements:</strong>
+          <div class="col-span-1 md:col-span-2 bg-[rgba(224,167,48,0.05)] p-3.5 rounded-lg mb-2.5 border border-[rgba(224,167,48,0.15)] text-[0.85rem] text-[#ccc] leading-relaxed">
+            <strong class="text-[#e0a730] block mb-1">💡 SEO Guideline for Placements:</strong>
             For best Google search ranking, always fill in exact student names and designations.
             <br/><em>Example: Student <strong>"Laxmi Kumari"</strong> at <strong>"CompliStack Technologies"</strong> as <strong>"Full Stack Developer"</strong>.</em>
           </div>
-          <div class="form-field">
-            <label for="plStudentName">Student Name *</label>
-            <input type="text" id="plStudentName" placeholder="e.g. Laxmi Kumari" required />
+          <div class="flex flex-col gap-1.5">
+            <label for="plStudentName" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Student Name *</label>
+            <input type="text" id="plStudentName" placeholder="e.g. Laxmi Kumari" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" required />
           </div>
-          <div class="form-field">
-            <label for="plCompanyName">Company Name *</label>
-            <input type="text" id="plCompanyName" placeholder="e.g. CompliStack Technologies" required />
+          <div class="flex flex-col gap-1.5">
+            <label for="plCompanyName" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Company Name *</label>
+            <input type="text" id="plCompanyName" placeholder="e.g. CompliStack Technologies" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" required />
           </div>
-          <div class="form-field">
-            <label for="plPackageLPA">Package (LPA) *</label>
-            <input type="number" step="0.1" id="plPackageLPA" placeholder="e.g. 5.5" required />
+          <div class="flex flex-col gap-1.5">
+            <label for="plPackageLPA" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Package (LPA) *</label>
+            <input type="number" step="0.1" id="plPackageLPA" placeholder="e.g. 5.5" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" required />
           </div>
-          <div class="form-field">
-            <label for="plDesignation">Designation *</label>
-            <input type="text" id="plDesignation" placeholder="e.g. Full Stack Developer" required />
+          <div class="flex flex-col gap-1.5">
+            <label for="plDesignation" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Designation *</label>
+            <input type="text" id="plDesignation" placeholder="e.g. Full Stack Developer" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" required />
           </div>
-          <div class="form-field">
-            <label for="plPlacedYear">Placed Year</label>
-            <input type="number" id="plPlacedYear" placeholder="e.g. 2026" />
+          <div class="flex flex-col gap-1.5">
+            <label for="plPlacedYear" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Placed Year</label>
+            <input type="number" id="plPlacedYear" placeholder="e.g. 2026" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" />
           </div>
-          <div class="form-field">
-            <label for="plActive">Show on Website</label>
-            <select id="plActive">
-              <option value="true">Yes, Show</option>
-              <option value="false">No, Hide</option>
+          <div class="flex flex-col gap-1.5">
+            <label for="plActive" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Show on Website</label>
+            <select id="plActive" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]">
+              <option value="true" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">Yes, Show</option>
+              <option value="false" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">No, Hide</option>
             </select>
           </div>
-          <div class="form-field">
-            <label for="plPhoto">Student Photo * (S3 Upload)</label>
-            <input type="file" id="plPhoto" accept="image/*" />
+          <div class="flex flex-col gap-1.5">
+            <label for="plPhoto" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Student Photo * (S3 Upload)</label>
+            <input type="file" id="plPhoto" accept="image/*" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" />
             <small style="color: #888;" id="plPhotoInfo"></small>
           </div>
-          <div class="form-field">
-            <label for="plCompanyLogo">Company Logo (S3 Upload)</label>
-            <input type="file" id="plCompanyLogo" accept="image/*" />
+          <div class="flex flex-col gap-1.5">
+            <label for="plCompanyLogo" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Company Logo (S3 Upload)</label>
+            <input type="file" id="plCompanyLogo" accept="image/*" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" />
             <small style="color: #888;" id="plCompanyLogoInfo"></small>
           </div>
-          <div class="form-field-span-2" style="display: flex; gap: 12px; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 20px;">
-            <button type="submit" class="btn-primary" style="flex: 1;">Save Placement</button>
-            <button type="button" class="btn-secondary" onclick="closePlacementModal()" style="flex: 1;">Cancel</button>
+          <div class="col-span-1 md:col-span-2 flex gap-3 mt-5 border-t border-[rgba(255,255,255,0.06)] pt-5">
+            <button type="submit" class="flex-1 bg-[#e0a730] hover:bg-[#c99324] hover:shadow-[0_4px_15px_rgba(224,167,48,0.2)] text-[#111] font-bold py-[11px] px-[22px] rounded-lg transition-all light:bg-[#204180] light:text-white light:hover:bg-[#173266] light:hover:shadow-[0_4px_15px_rgba(32,65,128,0.2)]">Save Placement</button>
+            <button type="button" class="flex-1 bg-[rgba(255,255,255,0.05)] text-[#d1d5db] border border-[rgba(255,255,255,0.1)] py-[10px] px-[22px] font-semibold rounded-lg hover:bg-[rgba(255,255,255,0.08)] hover:text-white transition-all light:bg-[#f1f5f9] light:text-[#475569] light:border-[rgba(0,0,0,0.06)] light:hover:bg-[#e2e8f0] light:hover:text-[#0f172a]" onclick="closePlacementModal()">Cancel</button>
           </div>
         </form>
       </div>
     </div>
 
     <!-- ADD/EDIT BLOG MODAL -->
-    <div id="blogModal" class="modal-overlay" style="display: none;">
-      <div class="modal-card" style="max-width: 750px;">
-        <div class="modal-header">
-          <h3 id="blogModalTitle">Create Blog / Hiring Post</h3>
-          <span class="close-btn" onclick="closeBlogModal()">&times;</span>
+    <div id="blogModal" class="fixed inset-0 bg-[rgba(0,0,0,0.6)] backdrop-blur-[4px] flex items-center justify-center z-[1000] p-5" style="display: none;">
+      <div class="bg-[#111827] border border-[rgba(255,255,255,0.08)] rounded-2xl p-[30px] max-w-[750px] w-full shadow-[0_20px_40px_rgba(0,0,0,0.5)] max-h-[90vh] overflow-y-auto light:bg-white light:border-[rgba(0,0,0,0.08)] light:shadow-[0_20px_40px_rgba(0,0,0,0.08)]">
+        <div class="flex justify-between items-center mb-6 border-b border-[rgba(255,255,255,0.06)] pb-4 light:border-[rgba(0,0,0,0.08)]">
+          <h3 id="blogModalTitle" class="font-outfit font-bold text-[#e0a730] text-lg light:text-[#204180]">Create Blog / Hiring Post</h3>
+          <span class="text-[1.8rem] cursor-pointer text-[#9ca3af] leading-none transition-colors hover:text-white light:hover:text-[#0f172a]" onclick="closeBlogModal()">&times;</span>
         </div>
-        <div style="background: rgba(224, 167, 48, 0.05); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(224, 167, 48, 0.15);">
-          <strong style="color: #e0a730; display: block; margin-bottom: 5px;">🤖 Write with Grok AI</strong>
-          <div style="display: flex; gap: 10px;">
-            <input type="text" id="aiBlogPrompt" placeholder="Enter topic (e.g., Why Node.js is great for backend)..." style="flex: 1; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 6px; color: #fff; outline: none;" />
-            <button type="button" class="btn-primary" id="btnGenerateBlogAI" onclick="generateAIContent()" style="padding: 8px 18px; font-size: 0.9rem;">Generate</button>
+        <div class="bg-[rgba(224,167,48,0.05)] p-[15px] rounded-lg mb-5 border border-[rgba(224,167,48,0.15)]">
+          <strong class="text-[#e0a730] block mb-1">🤖 Write with Grok AI</strong>
+          <div class="flex gap-2.5">
+            <input type="text" id="aiBlogPrompt" placeholder="Enter topic (e.g., Why Node.js is great for backend)..." class="flex-1 bg-[rgba(0,0,0,0.2)] border border-[rgba(255,255,255,0.1)] p-2.5 rounded-md text-white outline-none" />
+            <button type="button" class="bg-[#e0a730] text-[#111] hover:bg-[#c99324] px-[18px] font-bold rounded-lg transition-all text-[0.9rem] light:bg-[#204180] light:text-white light:hover:bg-[#173266]" id="btnGenerateBlogAI" onclick="generateAIContent()">Generate</button>
           </div>
-          <div style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
-            <span style="font-size: 0.78rem; color: #888;">Quick topics:</span>
-            <button type="button" class="btn-secondary" style="font-size: 0.72rem; padding: 4px 8px; border-radius: 4px; display: inline-block; width: auto;" onclick="setAIPrompt('Top IT Trends in 2026')">IT Trends 2026</button>
-            <button type="button" class="btn-secondary" style="font-size: 0.72rem; padding: 4px 8px; border-radius: 4px; display: inline-block; width: auto;" onclick="setAIPrompt('Python Programming vs JavaScript')">Python vs JS</button>
-            <button type="button" class="btn-secondary" style="font-size: 0.72rem; padding: 4px 8px; border-radius: 4px; display: inline-block; width: auto;" onclick="setAIPrompt('Why Cloud Computing is essential for careers')">Cloud Computing</button>
-            <button type="button" class="btn-secondary" style="font-size: 0.72rem; padding: 4px 8px; border-radius: 4px; display: inline-block; width: auto;" onclick="setAIPrompt('Machine Learning basic guide for beginners')">ML Basics</button>
+          <div class="mt-2.5 flex gap-2 flex-wrap items-center">
+            <span class="text-[0.78rem] text-[#888]">Quick topics:</span>
+            <button type="button" class="bg-[rgba(255,255,255,0.05)] text-[#d1d5db] border border-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.08)] hover:text-white text-[0.72rem] py-1 px-2 rounded w-auto light:bg-[#f1f5f9] light:text-[#475569] light:border-[rgba(0,0,0,0.06)] light:hover:bg-[#e2e8f0]" onclick="setAIPrompt('Top IT Trends in 2026')">IT Trends 2026</button>
+            <button type="button" class="bg-[rgba(255,255,255,0.05)] text-[#d1d5db] border border-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.08)] hover:text-white text-[0.72rem] py-1 px-2 rounded w-auto light:bg-[#f1f5f9] light:text-[#475569] light:border-[rgba(0,0,0,0.06)] light:hover:bg-[#e2e8f0]" onclick="setAIPrompt('Python Programming vs JavaScript')">Python vs JS</button>
+            <button type="button" class="bg-[rgba(255,255,255,0.05)] text-[#d1d5db] border border-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.08)] hover:text-white text-[0.72rem] py-1 px-2 rounded w-auto light:bg-[#f1f5f9] light:text-[#475569] light:border-[rgba(0,0,0,0.06)] light:hover:bg-[#e2e8f0]" onclick="setAIPrompt('Why Cloud Computing is essential for careers')">Cloud Computing</button>
+            <button type="button" class="bg-[rgba(255,255,255,0.05)] text-[#d1d5db] border border-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.08)] hover:text-white text-[0.72rem] py-1 px-2 rounded w-auto light:bg-[#f1f5f9] light:text-[#475569] light:border-[rgba(0,0,0,0.06)] light:hover:bg-[#e2e8f0]" onclick="setAIPrompt('Machine Learning basic guide for beginners')">ML Basics</button>
           </div>
         </div>
-        <form id="blogForm" class="form-grid-2col">
+        <form id="blogForm" class="grid grid-cols-1 md:grid-cols-2 gap-[15px]">
           <input type="hidden" id="blogId" />
-          <div class="form-field">
-            <label for="blogTitle">Title *</label>
-            <input type="text" id="blogTitle" oninput="autoGenerateSlug()" required />
+          <div class="flex flex-col gap-1.5">
+            <label for="blogTitle" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Title *</label>
+            <input type="text" id="blogTitle" oninput="autoGenerateSlug()" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" required />
           </div>
-          <div class="form-field">
-            <label for="blogSlug">Slug (SEO URL Part) *</label>
-            <input type="text" id="blogSlug" placeholder="e.g. why-nodejs-is-great" required />
+          <div class="flex flex-col gap-1.5">
+            <label for="blogSlug" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Slug (SEO URL Part) *</label>
+            <input type="text" id="blogSlug" placeholder="e.g. why-nodejs-is-great" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" required />
           </div>
-          <div class="form-field form-field-span-2">
-            <label for="blogSummary">Meta Summary * (Short SEO description)</label>
-            <textarea id="blogSummary" rows="2" required></textarea>
+          <div class="col-span-1 md:col-span-2 flex flex-col gap-1.5">
+            <label for="blogSummary" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Meta Summary * (Short SEO description)</label>
+            <textarea id="blogSummary" rows="2" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" required></textarea>
           </div>
-          <div class="form-field form-field-span-2">
-            <label for="blogContent">Blog Content (HTML allowed) *</label>
-            <textarea id="blogContent" rows="8" required></textarea>
+          <div class="col-span-1 md:col-span-2 flex flex-col gap-1.5">
+            <label for="blogContent" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Blog Content (HTML allowed) *</label>
+            <textarea id="blogContent" rows="8" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" required></textarea>
           </div>
-          <div class="form-field">
-            <label for="blogType">Post Type</label>
-            <select id="blogType" onchange="toggleHiringFields()">
-              <option value="Blog">Blog Post</option>
-              <option value="Hiring">Job Hiring Alert</option>
+          <div class="flex flex-col gap-1.5">
+            <label for="blogType" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Post Type</label>
+            <select id="blogType" onchange="toggleHiringFields()" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]">
+              <option value="Blog" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">Blog Post</option>
+              <option value="Hiring" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">Job Hiring Alert</option>
             </select>
           </div>
-          <div class="form-field">
-            <label for="blogStatus">Publication Status</label>
-            <select id="blogStatus">
-              <option value="Draft">Draft (Save only)</option>
-              <option value="Published">Published (Live on site)</option>
+          <div class="flex flex-col gap-1.5">
+            <label for="blogStatus" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Publication Status</label>
+            <select id="blogStatus" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]">
+              <option value="Draft" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">Draft (Save only)</option>
+              <option value="Published" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">Published (Live on site)</option>
             </select>
           </div>
-          <div class="form-field">
-            <label for="blogActive">Visibility</label>
-            <select id="blogActive">
-              <option value="true">Active (Show)</option>
-              <option value="false">Inactive (Hide)</option>
+          <div class="flex flex-col gap-1.5">
+            <label for="blogActive" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Visibility</label>
+            <select id="blogActive" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]">
+              <option value="true" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">Active (Show)</option>
+              <option value="false" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">Inactive (Hide)</option>
             </select>
           </div>
-          <div class="form-field">
-            <label for="blogTags">Tags (Comma-separated)</label>
-            <input type="text" id="blogTags" placeholder="python, coding, job" />
+          <div class="flex flex-col gap-1.5">
+            <label for="blogTags" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Tags (Comma-separated)</label>
+            <input type="text" id="blogTags" placeholder="python, coding, job" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" />
           </div>
-          <div class="form-field">
-            <label for="blogImage">Banner Image (S3 Upload)</label>
-            <input type="file" id="blogImage" accept="image/*" />
+          <div class="flex flex-col gap-1.5">
+            <label for="blogImage" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Banner Image (S3 Upload)</label>
+            <input type="file" id="blogImage" accept="image/*" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" />
             <small style="color: #888;" id="blogImageInfo"></small>
           </div>
 
           <!-- HIRING ALERTS SPECIFIC FIELDS -->
-          <div id="hiringFields" class="form-field-span-2 form-grid-2col" style="display: none; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 15px; margin-top: 5px;">
-            <div class="form-field">
-              <label for="hirCompany">Hiring Company Name</label>
-              <input type="text" id="hirCompany" />
+          <div id="hiringFields" class="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-[15px]" style="display: none; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 15px; margin-top: 5px;">
+            <div class="flex flex-col gap-1.5">
+              <label for="hirCompany" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Hiring Company Name</label>
+              <input type="text" id="hirCompany" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" />
             </div>
-            <div class="form-field">
-              <label for="hirRole">Hiring Designation / Role</label>
-              <input type="text" id="hirRole" />
+            <div class="flex flex-col gap-1.5">
+              <label for="hirRole" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Hiring Designation / Role</label>
+              <input type="text" id="hirRole" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" />
             </div>
-            <div class="form-field">
-              <label for="hirLocation">Job Location</label>
-              <input type="text" id="hirLocation" placeholder="e.g. Gurugram / Remote" />
+            <div class="flex flex-col gap-1.5">
+              <label for="hirLocation" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Job Location</label>
+              <input type="text" id="hirLocation" placeholder="e.g. Gurugram / Remote" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" />
             </div>
-            <div class="form-field">
-              <label for="hirApplyLink">Direct Apply Link</label>
-              <input type="text" id="hirApplyLink" placeholder="e.g. https://tcs.com/careers" />
+            <div class="flex flex-col gap-1.5">
+              <label for="hirApplyLink" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Direct Apply Link</label>
+              <input type="text" id="hirApplyLink" placeholder="e.g. https://tcs.com/careers" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" />
             </div>
           </div>
 
-          <div class="form-field-span-2" style="display: flex; gap: 12px; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 20px;">
-            <button type="submit" class="btn-primary" style="flex: 1;">Save Post</button>
-            <button type="button" class="btn-secondary" onclick="closeBlogModal()" style="flex: 1;">Cancel</button>
+          <div class="col-span-1 md:col-span-2 flex gap-3 mt-5 border-t border-[rgba(255,255,255,0.06)] pt-5">
+            <button type="submit" class="flex-1 bg-[#e0a730] hover:bg-[#c99324] hover:shadow-[0_4px_15px_rgba(224,167,48,0.2)] text-[#111] font-bold py-[11px] px-[22px] rounded-lg transition-all light:bg-[#204180] light:text-white light:hover:bg-[#173266] light:hover:shadow-[0_4px_15px_rgba(32,65,128,0.2)]">Save Post</button>
+            <button type="button" class="flex-1 bg-[rgba(255,255,255,0.05)] text-[#d1d5db] border border-[rgba(255,255,255,0.1)] py-[10px] px-[22px] font-semibold rounded-lg hover:bg-[rgba(255,255,255,0.08)] hover:text-white transition-all light:bg-[#f1f5f9] light:text-[#475569] light:border-[rgba(0,0,0,0.06)] light:hover:bg-[#e2e8f0] light:hover:text-[#0f172a]" onclick="closeBlogModal()">Cancel</button>
           </div>
         </form>
       </div>
     </div>
 
     <!-- ADD/EDIT STUDY NOTE MODAL -->
-    <div id="noteModal" class="modal-overlay" style="display: none;">
-      <div class="modal-card">
-        <div class="modal-header">
-          <h3 id="noteModalTitle">Add Study Note PDF</h3>
-          <span class="close-btn" onclick="closeNoteModal()">&times;</span>
+    <div id="noteModal" class="fixed inset-0 bg-[rgba(0,0,0,0.6)] backdrop-blur-[4px] flex items-center justify-center z-[1000] p-5" style="display: none;">
+      <div class="bg-[#111827] border border-[rgba(255,255,255,0.08)] rounded-2xl p-[30px] max-w-[600px] w-full shadow-[0_20px_40px_rgba(0,0,0,0.5)] max-h-[90vh] overflow-y-auto light:bg-white light:border-[rgba(0,0,0,0.08)] light:shadow-[0_20px_40px_rgba(0,0,0,0.08)]">
+        <div class="flex justify-between items-center mb-6 border-b border-[rgba(255,255,255,0.06)] pb-4 light:border-[rgba(0,0,0,0.08)]">
+          <h3 id="noteModalTitle" class="font-outfit font-bold text-[#e0a730] text-lg light:text-[#204180]">Add Study Note PDF</h3>
+          <span class="text-[1.8rem] cursor-pointer text-[#9ca3af] leading-none transition-colors hover:text-white light:hover:text-[#0f172a]" onclick="closeNoteModal()">&times;</span>
         </div>
-        <form id="noteForm" class="form-grid-2col">
+        <form id="noteForm" class="grid grid-cols-1 md:grid-cols-2 gap-[15px]">
           <input type="hidden" id="noteId" />
-          <div class="form-field">
-            <label for="noTitle">Title *</label>
-            <input type="text" id="noTitle" required />
+          <div class="flex flex-col gap-1.5">
+            <label for="noTitle" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Title *</label>
+            <input type="text" id="noTitle" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" required />
           </div>
-          <div class="form-field">
-            <label for="noCategory">Category * (e.g. Python, Excel)</label>
-            <input type="text" id="noCategory" required />
+          <div class="flex flex-col gap-1.5">
+            <label for="noCategory" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Category * (e.g. Python, Excel)</label>
+            <input type="text" id="noCategory" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" required />
           </div>
-          <div class="form-field form-field-span-2">
-            <label for="noDescription">Description *</label>
-            <textarea id="noDescription" rows="3" required></textarea>
+          <div class="col-span-1 md:col-span-2 flex flex-col gap-1.5">
+            <label for="noDescription" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Description *</label>
+            <textarea id="noDescription" rows="3" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" required></textarea>
           </div>
-          <div class="form-field">
-            <label for="noActive">Visibility</label>
-            <select id="noActive">
-              <option value="true">Active (Show)</option>
-              <option value="false">Inactive (Hide)</option>
+          <div class="flex flex-col gap-1.5">
+            <label for="noActive" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Visibility</label>
+            <select id="noActive" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]">
+              <option value="true" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">Active (Show)</option>
+              <option value="false" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">Inactive (Hide)</option>
             </select>
           </div>
-          <div class="form-field">
-            <label for="noFile">Upload PDF Document * (S3 Upload)</label>
-            <input type="file" id="noFile" accept=".pdf" />
+          <div class="flex flex-col gap-1.5">
+            <label for="noFile" class="text-[0.8rem] font-semibold text-[#9ca3af] mb-0.5 light:text-[#64748b]">Upload PDF Document * (S3 Upload)</label>
+            <input type="file" id="noFile" accept=".pdf" class="bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] p-[10px_14px] rounded-lg text-white outline-none transition-colors focus:border-[#e0a730] light:bg-[#f8fafc] light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" />
             <small style="color: #888;" id="noFileInfo"></small>
           </div>
-          <div class="form-field-span-2" style="display: flex; gap: 12px; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 20px;">
-            <button type="submit" class="btn-primary" style="flex: 1;">Save Study Note</button>
-            <button type="button" class="btn-secondary" onclick="closeNoteModal()" style="flex: 1;">Cancel</button>
+          <div class="col-span-1 md:col-span-2 flex gap-3 mt-5 border-t border-[rgba(255,255,255,0.06)] pt-5">
+            <button type="submit" class="flex-1 bg-[#e0a730] hover:bg-[#c99324] hover:shadow-[0_4px_15px_rgba(224,167,48,0.2)] text-[#111] font-bold py-[11px] px-[22px] rounded-lg transition-all light:bg-[#204180] light:text-white light:hover:bg-[#173266] light:hover:shadow-[0_4px_15px_rgba(32,65,128,0.2)]">Save Study Note</button>
+            <button type="button" class="flex-1 bg-[rgba(255,255,255,0.05)] text-[#d1d5db] border border-[rgba(255,255,255,0.1)] py-[10px] px-[22px] font-semibold rounded-lg hover:bg-[rgba(255,255,255,0.08)] hover:text-white transition-all light:bg-[#f1f5f9] light:text-[#475569] light:border-[rgba(0,0,0,0.06)] light:hover:bg-[#e2e8f0] light:hover:text-[#0f172a]" onclick="closeNoteModal()">Cancel</button>
           </div>
         </form>
       </div>
     </div>
 
     <!-- STUDY NOTES DOWNLOAD LEADS MODAL -->
-    <div id="notesLeadsModal" class="modal-overlay" style="display: none;">
-      <div class="modal-card" style="max-width: 800px;">
-        <div class="modal-header">
-          <h3>Study Notes Download Leads</h3>
-          <span class="close-btn" onclick="closeNotesLeadsModal()">&times;</span>
+    <div id="notesLeadsModal" class="fixed inset-0 bg-[rgba(0,0,0,0.6)] backdrop-blur-[4px] flex items-center justify-center z-[1000] p-5" style="display: none;">
+      <div class="bg-[#111827] border border-[rgba(255,255,255,0.08)] rounded-2xl p-[30px] max-w-[800px] w-full shadow-[0_20px_40px_rgba(0,0,0,0.5)] max-h-[90vh] overflow-y-auto light:bg-white light:border-[rgba(0,0,0,0.08)] light:shadow-[0_20px_40px_rgba(0,0,0,0.08)]">
+        <div class="flex justify-between items-center mb-6 border-b border-[rgba(255,255,255,0.06)] pb-4 light:border-[rgba(0,0,0,0.08)]">
+          <h3 class="font-outfit font-bold text-[#e0a730] text-lg light:text-[#204180]">Study Notes Download Leads</h3>
+          <span class="text-[1.8rem] cursor-pointer text-[#9ca3af] leading-none transition-colors hover:text-white light:hover:text-[#0f172a]" onclick="closeNotesLeadsModal()">&times;</span>
         </div>
         <div style="max-height: 400px; overflow-y: auto;">
-          <table class="admin-table">
+          <table class="w-full border-collapse mt-5 bg-[rgba(255,255,255,0.01)] rounded-xl overflow-hidden">
             <thead>
-              <tr>
-                <th>Name</th>
-                <th>Phone</th>
-                <th>Email</th>
-                <th>Action details</th>
-                <th>Date</th>
+              <tr class="border-b border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.03)] text-[#e0a730] font-semibold light:border-[rgba(0,0,0,0.06)] light:bg-[#f1f5f9] light:text-[#204180]">
+                <th class="p-[14px_20px] text-left">Name</th>
+                <th class="p-[14px_20px] text-left">Phone</th>
+                <th class="p-[14px_20px] text-left">Email</th>
+                <th class="p-[14px_20px] text-left">Action details</th>
+                <th class="p-[14px_20px] text-left">Date</th>
               </tr>
             </thead>
-            <tbody id="notesLeadsTableBody">
+            <tbody id="notesLeadsTableBody" class="text-[#d1d5db] text-[0.92rem] light:text-[#334155]">
               <tr>
-                <td colspan="5" style="text-align: center; color: #888;">No leads found.</td>
+                <td colspan="5" class="p-[14px_20px] text-center text-[#888] border-b border-[rgba(255,255,255,0.05)] light:border-[rgba(0,0,0,0.06)]">No leads found.</td>
               </tr>
             </tbody>
           </table>
@@ -1643,24 +646,25 @@
     </div>
 
     <!-- CUSTOM DIALOG MODAL -->
-    <div id="customDialogModal" class="modal-overlay" style="display: none;">
-      <div class="modal-card" style="max-width: 450px;">
-        <div class="modal-header" style="margin-bottom: 15px; padding-bottom: 10px;">
-          <h3 id="customDialogTitle">Confirm Action</h3>
-          <span class="close-btn" onclick="resolveCustomDialog(null)">&times;</span>
+    <div id="customDialogModal" class="fixed inset-0 bg-[rgba(0,0,0,0.6)] backdrop-blur-[4px] flex items-center justify-center z-[1000] p-5" style="display: none;">
+      <div class="bg-[#111827] border border-[rgba(255,255,255,0.08)] rounded-2xl p-[30px] max-w-[450px] w-full shadow-[0_20px_40px_rgba(0,0,0,0.5)] max-h-[90vh] overflow-y-auto light:bg-white light:border-[rgba(0,0,0,0.08)] light:shadow-[0_20px_40px_rgba(0,0,0,0.08)]">
+        <div class="flex justify-between items-center mb-[15px] border-b border-[rgba(255,255,255,0.06)] pb-2.5 light:border-[rgba(0,0,0,0.08)]">
+          <h3 id="customDialogTitle" class="font-outfit font-bold text-[#e0a730] text-lg light:text-[#204180]">Confirm Action</h3>
+          <span class="text-[1.8rem] cursor-pointer text-[#9ca3af] leading-none transition-colors hover:text-white light:hover:text-[#0f172a]" onclick="resolveCustomDialog(null)">&times;</span>
         </div>
-        <div id="customDialogBody" class="custom-dialog-text"></div>
-        <div id="customDialogPromptContainer" style="display: none; margin-bottom: 20px;" class="form-field">
-          <input type="text" id="customDialogInput" />
+        <div id="customDialogBody" class="text-[0.95rem] leading-relaxed text-[#cbd5e1] mb-5 light:text-[#334155]"></div>
+        <div id="customDialogPromptContainer" class="flex flex-col gap-1.5 mb-5" style="display: none;">
+          <input type="text" id="customDialogInput" class="w-full p-[10px_14px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] rounded-lg text-white outline-none focus:border-[#e0a730] transition-colors font-sans light:bg-white light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" />
         </div>
-        <div style="display: flex; gap: 12px; justify-content: flex-end;">
-          <button type="button" class="btn-secondary" onclick="resolveCustomDialog(false)" id="customDialogCancelBtn" style="padding: 8px 20px;">Cancel</button>
-          <button type="button" class="btn-primary" onclick="resolveCustomDialog(true)" id="customDialogConfirmBtn" style="padding: 8px 20px;">Confirm</button>
+        <div class="flex gap-3 justify-end">
+          <button type="button" class="bg-[rgba(255,255,255,0.05)] text-[#d1d5db] border border-[rgba(255,255,255,0.1)] py-2 px-5 font-semibold rounded-lg hover:bg-[rgba(255,255,255,0.08)] hover:text-white transition-all light:bg-[#f1f5f9] light:text-[#475569] light:border-[rgba(0,0,0,0.06)] light:hover:bg-[#e2e8f0] light:hover:text-[#0f172a]" onclick="resolveCustomDialog(false)" id="customDialogCancelBtn">Cancel</button>
+          <button type="button" class="bg-[#e0a730] text-[#111] border-none py-2 px-5 font-bold rounded-lg hover:bg-[#c99324] hover:shadow-[0_4px_15px_rgba(224,167,48,0.2)] transition-all light:bg-[#204180] light:text-white light:hover:bg-[#173266] light:hover:shadow-[0_4px_15px_rgba(32,65,128,0.2)]" onclick="resolveCustomDialog(true)" id="customDialogConfirmBtn">Confirm</button>
         </div>
       </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="js/admin-dashboard.js"></script>
     <script src="js/placements-blogs-notes.js"></script>
   </body>
 </html>
