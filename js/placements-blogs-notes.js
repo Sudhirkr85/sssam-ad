@@ -302,8 +302,34 @@ window.openEditBlogModal = function(itemJsonStr) {
   const item = JSON.parse(decodeURIComponent(itemJsonStr));
   document.getElementById("blogForm").reset();
   document.getElementById("blogId").value = item._id;
-  document.getElementById("blogModalTitle").textContent = "Edit Blog / Hiring Post";
   
+  const isHiring = item.type === "Hiring";
+  
+  document.getElementById("blogModalTitle").textContent = isHiring ? "Edit Hiring Job Post" : "Edit Blog Post";
+  
+  const saveBtn = document.querySelector("#blogForm button[type='submit']");
+  if (saveBtn) saveBtn.textContent = isHiring ? "Update Job" : "Update Post";
+
+  // AI Section — hide for Edit mode completely to keep it simple
+  const aiSection = document.getElementById("blogAISection");
+  const hiringAISection = document.getElementById("hiringAISection");
+  if (aiSection) aiSection.style.display = "none";
+  if (hiringAISection) hiringAISection.style.display = "none";
+
+  // Dynamic labels
+  document.getElementById("lbl-title").textContent    = isHiring ? "Job Title *"                          : "Title *";
+  document.getElementById("lbl-slug").textContent     = isHiring ? "Job URL Slug *"                       : "Slug (SEO URL Part) *";
+  document.getElementById("lbl-summary").textContent  = isHiring ? "Job Short Description *"              : "Meta Summary * (Short SEO description)";
+  document.getElementById("lbl-content").textContent  = isHiring ? "Full Job Description (HTML allowed) *": "Blog Content (HTML allowed) *";
+
+  // Dynamic placeholders
+  document.getElementById("blogTitle").placeholder   = isHiring ? "e.g. React Developer — Internship"    : "e.g. Why Node.js is great for backend";
+  document.getElementById("blogSlug").placeholder    = isHiring ? "e.g. react-developer-internship-2026" : "e.g. why-nodejs-is-great";
+  document.getElementById("blogSummary").placeholder = isHiring ? "Brief about the role, skills needed…" : "Short SEO description of the blog…";
+  document.getElementById("blogContent").placeholder = isHiring
+    ? "Eligibility, responsibilities, salary, how to apply…"
+    : "Full blog content here (HTML tags allowed)…";
+
   document.getElementById("blogTitle").value = item.title;
   document.getElementById("blogSlug").value = item.slug;
   document.getElementById("blogSummary").value = item.summary;
@@ -315,9 +341,12 @@ window.openEditBlogModal = function(itemJsonStr) {
   
   document.getElementById("blogImageInfo").textContent = "Leave empty to retain existing banner image.";
 
-  if (item.type === "Hiring") {
+  if (isHiring) {
     document.getElementById("hiringFields").style.display = "grid";
     if (item.hiringDetails) {
+      const source = item.hiringDetails.source || "external";
+      document.getElementById("hirSource").value = source;
+      toggleHiringSource();
       document.getElementById("hirCompany").value = item.hiringDetails.company || "";
       document.getElementById("hirRole").value = item.hiringDetails.role || "";
       document.getElementById("hirLocation").value = item.hiringDetails.location || "";
