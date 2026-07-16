@@ -384,14 +384,31 @@ window.generateAIContent = async function() {
       method: "POST",
       body: JSON.stringify({ prompt })
     });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.message || "Failed to generate content.");
+    
+    const raw = await res.text();
+    let title = "", summary = "", content = "", tags = [];
+    
+    try {
+      // Safe parsing: scrub raw text from dangerous single backslashes or invalid escaping sequences first
+      const scrubbed = raw.replace(/\\(?!["\\\/bfnrtu])/g, "\\\\");
+      const data = JSON.parse(scrubbed);
+      if (!res.ok) throw new Error(data.message || "Failed to generate content.");
+      title = data.title || "";
+      summary = data.summary || "";
+      content = data.content || "";
+      tags = data.tags || [];
+    } catch (_) {
+      // Fallback: If AI returned text with invalid JSON structure, treat whole text as content
+      content = raw;
+      title = prompt;
+      summary = "AI Generated Technical Blog Post.";
+    }
 
-    document.getElementById("blogTitle").value = data.title;
-    document.getElementById("blogSummary").value = data.summary;
-    document.getElementById("blogContent").value = data.content;
-    if (data.tags && Array.isArray(data.tags)) {
-      document.getElementById("blogTags").value = data.tags.join(", ");
+    document.getElementById("blogTitle").value = title;
+    document.getElementById("blogSummary").value = summary;
+    document.getElementById("blogContent").value = content;
+    if (tags && Array.isArray(tags)) {
+      document.getElementById("blogTags").value = tags.join(", ");
     }
     
     // Auto-generate slug
