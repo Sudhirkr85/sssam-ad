@@ -275,14 +275,6 @@
             <div class="flex-1 min-w-[200px]">
               <input type="text" id="enqSearchInput" class="w-full p-[10px_14px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] rounded-lg text-white outline-none focus:border-[#e0a730] transition-colors font-sans light:bg-white light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" placeholder="Search by name, email, phone..." oninput="filterEnquiries()" />
             </div>
-            <div class="w-[180px]">
-              <select id="enqStatusFilter" class="w-full p-[10px_14px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] rounded-lg text-white outline-none focus:border-[#e0a730] transition-colors font-sans light:bg-white light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180] cursor-pointer" onchange="loadEnquiries()">
-                <option value="" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">All Statuses</option>
-                <option value="Received" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">Received</option>
-                <option value="In Progress" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">In Progress</option>
-                <option value="Closed" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">Closed</option>
-              </select>
-            </div>
           </div>
           <div class="overflow-x-auto w-full">
             <table class="w-full border-collapse mt-5 bg-[rgba(255,255,255,0.01)] rounded-xl overflow-hidden min-w-[750px]">
@@ -292,7 +284,7 @@
                   <th class="p-[14px_20px] text-left">Email</th>
                   <th class="p-[14px_20px] text-left">Phone</th>
                   <th class="p-[14px_20px] text-left">Message</th>
-                  <th class="p-[14px_20px] text-left">Status</th>
+                  <th class="p-[14px_20px] text-left">Actions</th>
                 </tr>
               </thead>
               <tbody id="enquiriesTableBody" class="text-[#d1d5db] text-[0.92rem] light:text-[#334155]">

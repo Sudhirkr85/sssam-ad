@@ -243,23 +243,26 @@ async function loadApplications() {
       return;
     }
 
-    tbody.innerHTML = list.map(app => `
-      <tr>
-        <td><strong>${app.applicationId}</strong></td>
-        <td>${app.fullName}</td>
-        <td>${app.course}</td>
-        <td>${app.certificateType}</td>
-        <td>${app.phoneNumber}</td>
-        <td><span style="color: ${app.status === 'Approved' ? '#10b981' : (app.status === 'Rejected' ? '#ef4448' : '#e0a730')}">${app.status}</span></td>
-        <td>
-          <span class="action-badge badge-edit" onclick="openEditModal('${encodeURIComponent(JSON.stringify(app))}')">Edit</span>
-          ${app.status === "Pending" ? `
-            <span class="action-badge badge-approve" onclick="approveApp('${app.applicationId}')">Approve</span>
-            <span class="action-badge badge-reject" onclick="rejectApp('${app.applicationId}')">Reject</span>
-          ` : ``}
-        </td>
-      </tr>
-    `).join("");
+    tbody.innerHTML = list.map(app => {
+      const displayCourse = app.course && app.course.length > 25 ? app.course.substring(0, 25) + "..." : (app.course || "");
+      return `
+        <tr>
+          <td><strong>${app.applicationId}</strong></td>
+          <td>${app.fullName}</td>
+          <td title="${app.course || ''}">${displayCourse}</td>
+          <td>${app.certificateType}</td>
+          <td>${app.phoneNumber}</td>
+          <td><span style="color: ${app.status === 'Approved' ? '#10b981' : (app.status === 'Rejected' ? '#ef4448' : '#e0a730')}">${app.status}</span></td>
+          <td>
+            <span class="action-badge badge-edit" onclick="openEditModal('${encodeURIComponent(JSON.stringify(app))}')">Edit</span>
+            ${app.status === "Pending" ? `
+              <span class="action-badge badge-approve" onclick="approveApp('${app.applicationId}')">Approve</span>
+              <span class="action-badge badge-reject" onclick="rejectApp('${app.applicationId}')">Reject</span>
+            ` : ``}
+          </td>
+        </tr>
+      `;
+    }).join("");
     
     // Update pagination controls
     currentAppPage = pagination.page;
@@ -341,11 +344,16 @@ async function loadCertificates() {
         qualification: cert.qualification || app.qualification || "",
         organization: app.organization || ""
       };
+      let displayCertNo = cert.certificateNumber || "";
+      if (displayCertNo.startsWith("SSSAM/CERT/")) {
+        displayCertNo = ".../" + displayCertNo.substring("SSSAM/CERT/".length);
+      }
+      const displayCourse = cert.course && cert.course.length > 25 ? cert.course.substring(0, 25) + "..." : (cert.course || "");
       return `
         <tr>
-          <td><strong>${cert.certificateNumber}</strong></td>
+          <td title="${cert.certificateNumber}"><strong>${displayCertNo}</strong></td>
           <td>${cert.fullName}</td>
-          <td>${cert.course}</td>
+          <td title="${cert.course || ''}">${displayCourse}</td>
           <td>${new Date(cert.issueDate).toLocaleDateString()}</td>
           <td><span style="color: #10b981;">${cert.status || 'Active'}</span></td>
           <td>
@@ -393,7 +401,9 @@ async function loadEnquiries() {
         <td>${e.email}</td>
         <td>${e.phoneNumber}</td>
         <td>${e.message || 'N/A'}</td>
-        <td><span style="color: #888;">${e.status || 'Received'}</span></td>
+        <td>
+          <span class="action-badge badge-reject" style="cursor: pointer; padding: 4px 8px; border-radius: 4px; display: inline-block; margin-right: 5px;" onclick="deleteEnquiry('${e._id || e.id || e.enquiryId}')">Delete</span>
+        </td>
       </tr>
     `).join("");
 
@@ -406,6 +416,22 @@ async function loadEnquiries() {
     tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #ef5350;">Failed to load enquiries: ${err.message}</td></tr>`;
   }
 }
+
+window.deleteEnquiry = async function(id) {
+  if (!await confirm("Are you sure you want to delete this enquiry?")) return;
+  try {
+    const res = await adminFetch(`/api/admin/enquiries/${id}`, { method: "DELETE" });
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(data.message || "Delete failed");
+    }
+    showToast("Success", "Enquiry deleted successfully.", false);
+    loadEnquiries();
+    updateDashboardStats();
+  } catch (err) {
+    showToast("Error", err.message, true);
+  }
+};
 
 // ----------------------------------------------------
 // EDIT MODAL CONTROLLER
