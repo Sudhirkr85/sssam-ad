@@ -248,6 +248,8 @@ async function loadApplications() {
       let displayAppId = app.applicationId || "";
       if (displayAppId.startsWith("SSSAM/APP/")) {
         displayAppId = ".../" + displayAppId.substring("SSSAM/APP/".length);
+      } else if (displayAppId.startsWith("SSSAM-APP-")) {
+        displayAppId = "..." + displayAppId.substring("SSSAM-APP".length);
       }
       return `
         <tr>
