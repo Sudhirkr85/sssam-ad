@@ -245,9 +245,13 @@ async function loadApplications() {
 
     tbody.innerHTML = list.map(app => {
       const displayCourse = app.course && app.course.length > 25 ? app.course.substring(0, 25) + "..." : (app.course || "");
+      let displayAppId = app.applicationId || "";
+      if (displayAppId.startsWith("SSSAM/APP/")) {
+        displayAppId = ".../" + displayAppId.substring("SSSAM/APP/".length);
+      }
       return `
         <tr>
-          <td><strong>${app.applicationId}</strong></td>
+          <td title="${app.applicationId}"><strong>${displayAppId}</strong></td>
           <td>${app.fullName}</td>
           <td title="${app.course || ''}">${displayCourse}</td>
           <td>${app.certificateType}</td>
@@ -512,7 +516,28 @@ window.openEditModal = function(appJsonStr) {
       durationSelect.appendChild(opt);
     }
 
-    document.getElementById("editDurationDates").value = durationDates;
+    let startDateFmt = "";
+    let endDateFmt = "";
+    if (durationDates && durationDates.includes(" - ")) {
+      const dateParts = durationDates.split(" - ");
+      const parseDate = (dStr) => {
+        try {
+          const d = new Date(dStr);
+          if (isNaN(d.getTime())) return "";
+          const yyyy = d.getFullYear();
+          const mm = String(d.getMonth() + 1).padStart(2, '0');
+          const dd = String(d.getDate()).padStart(2, '0');
+          return `${yyyy}-${mm}-${dd}`;
+        } catch {
+          return "";
+        }
+      };
+      startDateFmt = parseDate(dateParts[0].trim());
+      endDateFmt = parseDate(dateParts[1].trim());
+    }
+
+    document.getElementById("editStartDate").value = startDateFmt;
+    document.getElementById("editEndDate").value = endDateFmt;
     document.getElementById("editQualification").value = app.qualification || "";
     document.getElementById("editOrganization").value = organization;
 
@@ -554,6 +579,17 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!currentEditingApp) return;
 
       const appId = document.getElementById("editAppId").value;
+      const startVal = document.getElementById("editStartDate").value;
+      const endVal = document.getElementById("editEndDate").value;
+      let durationDates = "";
+      if (startVal && endVal) {
+        const formatFriendly = (dStr) => {
+          const options = { month: "short", day: "numeric", year: "numeric" };
+          return new Date(dStr).toLocaleDateString("en-US", options);
+        };
+        durationDates = `${formatFriendly(startVal)} - ${formatFriendly(endVal)}`;
+      }
+
       const payload = {
         fullName: document.getElementById("editFullName").value.trim(),
         email: document.getElementById("editEmail").value.trim(),
@@ -562,7 +598,7 @@ document.addEventListener("DOMContentLoaded", () => {
         course: document.getElementById("editCourse").value.trim(),
         certificateType: document.getElementById("editCertificateType").value,
         duration: document.getElementById("editDuration").value.trim(),
-        durationDates: document.getElementById("editDurationDates").value.trim(),
+        durationDates: durationDates,
         qualification: document.getElementById("editQualification").value.trim(),
         organization: document.getElementById("editOrganization").value.trim(),
         issueDate: document.getElementById("editIssueDate").value
