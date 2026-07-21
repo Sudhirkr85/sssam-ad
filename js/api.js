@@ -3,8 +3,8 @@
    Central HTTP client — all requests go through here.
    ========================================================== */
 
-// const BASE_URL = "https://sssam-be.onrender.com";
-const BASE_URL = "http://localhost:5000";
+const BASE_URL = "https://sssam-be.onrender.com";
+// const BASE_URL = "http://localhost:5000";
 
 /**
  * Returns the stored JWT or null.
