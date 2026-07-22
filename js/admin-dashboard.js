@@ -384,7 +384,7 @@ async function loadCertificates() {
 
 async function loadEnquiries() {
   const tbody = document.getElementById("enquiriesTableBody");
-  tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #888;">Loading enquiries...</td></tr>`;
+  tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #888;">Loading enquiries...</td></tr>`;
 
   const search = document.getElementById("enqSearchInput")?.value || "";
   const status = document.getElementById("enqStatusFilter")?.value || "";
@@ -397,24 +397,30 @@ async function loadEnquiries() {
     const pagination = result.pagination || { page: 1, totalPages: 1, total: list.length };
 
     if (!list || list.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #888;">No enquiries found.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #888;">No enquiries found.</td></tr>`;
       document.getElementById("enqPaginationInfo").textContent = "Showing page 1 of 1";
       document.getElementById("enqPrevBtn").disabled = true;
       document.getElementById("enqNextBtn").disabled = true;
       return;
     }
 
-    tbody.innerHTML = list.map(e => `
-      <tr>
-        <td>${e.fullName || e.name}</td>
-        <td>${e.email}</td>
-        <td>${e.phoneNumber}</td>
-        <td>${e.message || 'N/A'}</td>
-        <td>
-          <span class="action-badge badge-reject" style="cursor: pointer; padding: 4px 8px; border-radius: 4px; display: inline-block; margin-right: 5px;" onclick="deleteEnquiry('${e._id || e.id || e.enquiryId}')">Delete</span>
-        </td>
-      </tr>
-    `).join("");
+    tbody.innerHTML = list.map(e => {
+      const courseText = e.course === 'Others' ? (e.customCourseName ? `Others (${e.customCourseName})` : 'Others') : (e.course || e.message || 'General Enquiry');
+      const dateText = e.createdAt ? new Date(e.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-';
+      
+      return `
+        <tr>
+          <td><strong>${e.fullName || e.name || 'N/A'}</strong></td>
+          <td><span style="color: #e0a730; font-weight: 600;">${courseText}</span></td>
+          <td>${e.phoneNumber || e.phone || 'N/A'}</td>
+          <td>${e.email || '-'}</td>
+          <td><small style="color: #aaa;">${dateText}</small></td>
+          <td>
+            <span class="action-badge badge-reject" style="cursor: pointer; padding: 4px 8px; border-radius: 4px; display: inline-block; margin-right: 5px;" onclick="deleteEnquiry('${e._id || e.id || e.enquiryId}')">Delete</span>
+          </td>
+        </tr>
+      `;
+    }).join("");
 
     // Update pagination controls
     currentEnqPage = pagination.page;
@@ -422,7 +428,7 @@ async function loadEnquiries() {
     document.getElementById("enqPrevBtn").disabled = pagination.page <= 1;
     document.getElementById("enqNextBtn").disabled = pagination.page >= pagination.totalPages;
   } catch (err) {
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #ef5350;">Failed to load enquiries: ${err.message}</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #ef5350;">Failed to load enquiries: ${err.message}</td></tr>`;
   }
 }
 
