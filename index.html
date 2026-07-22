@@ -152,9 +152,11 @@
           <button class="admin-nav-btn active" data-panel="applications">Applications</button>
           <button class="admin-nav-btn" data-panel="certificates">Certificates</button>
           <button class="admin-nav-btn" data-panel="enquiries">Enquiries</button>
+          <button class="admin-nav-btn" data-panel="seminars">College Seminars</button>
+          <button class="admin-nav-btn" data-panel="hiring-requests">Hiring Requests</button>
           <button class="admin-nav-btn" data-panel="placements">Placements</button>
           <button class="admin-nav-btn" data-panel="blogs">Blogs</button>
-          <button class="admin-nav-btn" data-panel="hiring">Hiring</button>
+          <button class="admin-nav-btn" data-panel="hiring">Job Posts</button>
           <button class="admin-nav-btn" data-panel="notes">Study Notes</button>
           <button class="admin-nav-btn" data-panel="gallery">🖼 Gallery</button>
           <button class="admin-nav-btn" data-panel="settings">General Settings</button>
@@ -299,6 +301,99 @@
             <div class="flex gap-2">
               <button class="bg-[rgba(255,255,255,0.05)] text-[#d1d5db] border border-[rgba(255,255,255,0.1)] py-1.5 px-3.5 font-semibold rounded-lg hover:bg-[rgba(255,255,255,0.08)] hover:text-white transition-all text-xs light:bg-[#f1f5f9] light:text-[#475569] light:border-[rgba(0,0,0,0.06)] light:hover:bg-[#e2e8f0] light:hover:text-[#0f172a]" onclick="changeEnqPage(-1)" id="enqPrevBtn">Previous</button>
               <button class="bg-[rgba(255,255,255,0.05)] text-[#d1d5db] border border-[rgba(255,255,255,0.1)] py-1.5 px-3.5 font-semibold rounded-lg hover:bg-[rgba(255,255,255,0.08)] hover:text-white transition-all text-xs light:bg-[#f1f5f9] light:text-[#475569] light:border-[rgba(0,0,0,0.06)] light:hover:bg-[#e2e8f0] light:hover:text-[#0f172a]" onclick="changeEnqPage(1)" id="enqNextBtn">Next</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- PANEL: SEMINARS -->
+        <section class="admin-panel-content" id="panel-seminars" style="display: none;">
+          <p class="text-[#888]">College seminar booking requests received from website.</p>
+          <div class="flex gap-[15px] my-[15px] flex-wrap">
+            <div class="flex-1 min-w-[200px]">
+              <input type="text" id="semSearchInput" class="w-full p-[10px_14px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] rounded-lg text-white outline-none focus:border-[#e0a730] transition-colors font-sans light:bg-white light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" placeholder="Search by college, coordinator, topic..." oninput="filterSeminars()" />
+            </div>
+            <div class="w-[180px]">
+              <select id="semStatusFilter" class="w-full p-[10px_14px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] rounded-lg text-white outline-none focus:border-[#e0a730] transition-colors font-sans light:bg-white light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180] cursor-pointer" onchange="loadSeminars()">
+                <option value="" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">All Statuses</option>
+                <option value="new" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">New</option>
+                <option value="contacted" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">Contacted</option>
+                <option value="scheduled" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">Scheduled</option>
+                <option value="cancelled" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">Cancelled</option>
+              </select>
+            </div>
+          </div>
+          <div class="overflow-x-auto w-full">
+            <table class="w-full border-collapse mt-5 bg-[rgba(255,255,255,0.01)] rounded-xl overflow-hidden min-w-[750px]">
+              <thead>
+                <tr class="border-b border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.03)] text-[#e0a730] font-semibold light:border-[rgba(0,0,0,0.06)] light:bg-[#f1f5f9] light:text-[#204180]">
+                  <th class="p-[14px_20px] text-left">Booking ID</th>
+                  <th class="p-[14px_20px] text-left">College</th>
+                  <th class="p-[14px_20px] text-left">Coordinator</th>
+                  <th class="p-[14px_20px] text-left">Mobile</th>
+                  <th class="p-[14px_20px] text-left">Topic</th>
+                  <th class="p-[14px_20px] text-left">Status</th>
+                  <th class="p-[14px_20px] text-left">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="seminarsTableBody" class="text-[#d1d5db] text-[0.92rem] light:text-[#334155]">
+                <tr>
+                  <td colspan="7" class="p-[14px_20px] text-center text-[#666] border-b border-[rgba(255,255,255,0.05)] light:border-[rgba(0,0,0,0.06)]">Loading seminar bookings...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="pagination-container flex justify-between items-center mt-5 text-[0.88rem] text-[#9ca3af]" id="semPagination">
+            <span id="semPaginationInfo">Showing page 1 of 1</span>
+            <div class="flex gap-2">
+              <button class="bg-[rgba(255,255,255,0.05)] text-[#d1d5db] border border-[rgba(255,255,255,0.1)] py-1.5 px-3.5 font-semibold rounded-lg hover:bg-[rgba(255,255,255,0.08)] hover:text-white transition-all text-xs light:bg-[#f1f5f9] light:text-[#475569] light:border-[rgba(0,0,0,0.06)] light:hover:bg-[#e2e8f0] light:hover:text-[#0f172a]" onclick="changeSemPage(-1)" id="semPrevBtn">Previous</button>
+              <button class="bg-[rgba(255,255,255,0.05)] text-[#d1d5db] border border-[rgba(255,255,255,0.1)] py-1.5 px-3.5 font-semibold rounded-lg hover:bg-[rgba(255,255,255,0.08)] hover:text-white transition-all text-xs light:bg-[#f1f5f9] light:text-[#475569] light:border-[rgba(0,0,0,0.06)] light:hover:bg-[#e2e8f0] light:hover:text-[#0f172a]" onclick="changeSemPage(1)" id="semNextBtn">Next</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- PANEL: HIRING REQUESTS -->
+        <section class="admin-panel-content" id="panel-hiring-requests" style="display: none;">
+          <p class="text-[#888]">Company hiring requests received from website.</p>
+          <div class="flex gap-[15px] my-[15px] flex-wrap">
+            <div class="flex-1 min-w-[200px]">
+              <input type="text" id="hireReqSearchInput" class="w-full p-[10px_14px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] rounded-lg text-white outline-none focus:border-[#e0a730] transition-colors font-sans light:bg-white light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180]" placeholder="Search by company, HR name, domain..." oninput="filterHiringRequests()" />
+            </div>
+            <div class="w-[180px]">
+              <select id="hireReqStatusFilter" class="w-full p-[10px_14px] bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.1)] rounded-lg text-white outline-none focus:border-[#e0a730] transition-colors font-sans light:bg-white light:border-[rgba(0,0,0,0.08)] light:text-[#0f172a] light:focus:border-[#204180] cursor-pointer" onchange="loadHiringRequests()">
+                <option value="" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">All Statuses</option>
+                <option value="new" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">New</option>
+                <option value="contacted" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">Contacted</option>
+                <option value="hired" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">Hired</option>
+                <option value="cancelled" class="bg-[#111827] text-white light:bg-white light:text-[#0f172a]">Cancelled</option>
+              </select>
+            </div>
+          </div>
+          <div class="overflow-x-auto w-full">
+            <table class="w-full border-collapse mt-5 bg-[rgba(255,255,255,0.01)] rounded-xl overflow-hidden min-w-[750px]">
+              <thead>
+                <tr class="border-b border-[rgba(255,255,255,0.05)] bg-[rgba(255,255,255,0.03)] text-[#e0a730] font-semibold light:border-[rgba(0,0,0,0.06)] light:bg-[#f1f5f9] light:text-[#204180]">
+                  <th class="p-[14px_20px] text-left">Request ID</th>
+                  <th class="p-[14px_20px] text-left">Company</th>
+                  <th class="p-[14px_20px] text-left">HR Name</th>
+                  <th class="p-[14px_20px] text-left">Mobile</th>
+                  <th class="p-[14px_20px] text-left">Email</th>
+                  <th class="p-[14px_20px] text-left">Tech Domain</th>
+                  <th class="p-[14px_20px] text-left">Status</th>
+                  <th class="p-[14px_20px] text-left">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="hiringRequestsTableBody" class="text-[#d1d5db] text-[0.92rem] light:text-[#334155]">
+                <tr>
+                  <td colspan="8" class="p-[14px_20px] text-center text-[#666] border-b border-[rgba(255,255,255,0.05)] light:border-[rgba(0,0,0,0.06)]">Loading hiring requests...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="pagination-container flex justify-between items-center mt-5 text-[0.88rem] text-[#9ca3af]" id="hireReqPagination">
+            <span id="hireReqPaginationInfo">Showing page 1 of 1</span>
+            <div class="flex gap-2">
+              <button class="bg-[rgba(255,255,255,0.05)] text-[#d1d5db] border border-[rgba(255,255,255,0.1)] py-1.5 px-3.5 font-semibold rounded-lg hover:bg-[rgba(255,255,255,0.08)] hover:text-white transition-all text-xs light:bg-[#f1f5f9] light:text-[#475569] light:border-[rgba(0,0,0,0.06)] light:hover:bg-[#e2e8f0] light:hover:text-[#0f172a]" onclick="changeHireReqPage(-1)" id="hireReqPrevBtn">Previous</button>
+              <button class="bg-[rgba(255,255,255,0.05)] text-[#d1d5db] border border-[rgba(255,255,255,0.1)] py-1.5 px-3.5 font-semibold rounded-lg hover:bg-[rgba(255,255,255,0.08)] hover:text-white transition-all text-xs light:bg-[#f1f5f9] light:text-[#475569] light:border-[rgba(0,0,0,0.06)] light:hover:bg-[#e2e8f0] light:hover:text-[#0f172a]" onclick="changeHireReqPage(1)" id="hireReqNextBtn">Next</button>
             </div>
           </div>
         </section>

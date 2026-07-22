@@ -132,6 +132,8 @@ document.addEventListener("DOMContentLoaded", () => {
       if (panelId === "panel-applications") loadApplications();
       if (panelId === "panel-certificates") loadCertificates();
       if (panelId === "panel-enquiries") loadEnquiries();
+      if (panelId === "panel-seminars") loadSeminars();
+      if (panelId === "panel-hiring-requests") loadHiringRequests();
       if (panelId === "panel-settings") loadSettings();
 
       // Auto close sidebar on mobile tap
@@ -694,6 +696,173 @@ window.closeSidebar = function() {
     sidebar.classList.add("-translate-x-full");
     sidebar.classList.remove("translate-x-0");
     overlay.classList.add("hidden");
+  }
+};
+
+/* ── Seminar Bookings Management ── */
+let currentSemPage = 1;
+
+window.loadSeminars = async function() {
+  const tbody = document.getElementById("seminarsTableBody");
+  if (!tbody) return;
+  tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #888;">Loading seminar bookings...</td></tr>`;
+
+  const search = document.getElementById("semSearchInput")?.value || "";
+  const status = document.getElementById("semStatusFilter")?.value || "";
+  const query = new URLSearchParams({ search, status, page: currentSemPage, limit: PAGE_LIMIT }).toString();
+
+  try {
+    const res = await adminFetch(`/api/admin/seminars?${query}`);
+    const result = await res.json();
+    const list = result.data || [];
+    const pagination = result.pagination || { page: 1, totalPages: 1, total: list.length };
+
+    if (!list || list.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #888;">No seminar bookings found.</td></tr>`;
+      document.getElementById("semPaginationInfo").textContent = "Showing page 1 of 1";
+      document.getElementById("semPrevBtn").disabled = true;
+      document.getElementById("semNextBtn").disabled = true;
+      return;
+    }
+
+    tbody.innerHTML = list.map(item => `
+      <tr>
+        <td><strong>${item.bookingId}</strong></td>
+        <td>${item.collegeName}</td>
+        <td>${item.coordinatorName}</td>
+        <td><a href="tel:${item.mobileNumber}" style="color: #10b981;">${item.mobileNumber}</a></td>
+        <td>${item.topic}</td>
+        <td><span style="color: ${item.adminStatus === 'scheduled' ? '#10b981' : (item.adminStatus === 'cancelled' ? '#ef4448' : '#e0a730')}">${item.adminStatus || 'new'}</span></td>
+        <td>
+          <span class="action-badge badge-approve" onclick="updateSemStatus('${item.bookingId}', 'scheduled')">Schedule</span>
+          <span class="action-badge badge-reject" onclick="updateSemStatus('${item.bookingId}', 'cancelled')">Cancel</span>
+          <span class="action-badge badge-reject" onclick="deleteSemBooking('${item.bookingId}')">Delete</span>
+        </td>
+      </tr>
+    `).join("");
+
+    currentSemPage = pagination.page;
+    document.getElementById("semPaginationInfo").textContent = `Page ${pagination.page} of ${pagination.totalPages} (${pagination.total} total)`;
+    document.getElementById("semPrevBtn").disabled = pagination.page <= 1;
+    document.getElementById("semNextBtn").disabled = pagination.page >= pagination.totalPages;
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #ef5350;">Failed to load seminar bookings: ${err.message}</td></tr>`;
+  }
+};
+
+window.filterSeminars = function() { currentSemPage = 1; loadSeminars(); };
+window.changeSemPage = function(delta) { currentSemPage += delta; loadSeminars(); };
+
+window.updateSemStatus = async function(bookingId, status) {
+  if (!await confirm(`Update status of booking ${bookingId} to ${status}?`)) return;
+  try {
+    const res = await adminFetch(`/api/admin/seminars/${bookingId}/status`, {
+      method: "PATCH",
+      body: JSON.stringify({ status })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Failed to update status");
+    showToast("Success", "Status updated successfully", false);
+    loadSeminars();
+  } catch (err) {
+    showToast("Error", err.message, true);
+  }
+};
+
+window.deleteSemBooking = async function(bookingId) {
+  if (!await confirm(`Are you sure you want to delete seminar booking ${bookingId}?`)) return;
+  try {
+    const res = await adminFetch(`/api/admin/seminars/${bookingId}`, { method: "DELETE" });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Failed to delete");
+    showToast("Success", "Seminar booking deleted", false);
+    loadSeminars();
+  } catch (err) {
+    showToast("Error", err.message, true);
+  }
+};
+
+/* ── Hiring Requests Management ── */
+let currentHireReqPage = 1;
+
+window.loadHiringRequests = async function() {
+  const tbody = document.getElementById("hiringRequestsTableBody");
+  if (!tbody) return;
+  tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #888;">Loading hiring requests...</td></tr>`;
+
+  const search = document.getElementById("hireReqSearchInput")?.value || "";
+  const status = document.getElementById("hireReqStatusFilter")?.value || "";
+  const query = new URLSearchParams({ search, status, page: currentHireReqPage, limit: PAGE_LIMIT }).toString();
+
+  try {
+    const res = await adminFetch(`/api/admin/hiring-requests?${query}`);
+    const result = await res.json();
+    const list = result.data || [];
+    const pagination = result.pagination || { page: 1, totalPages: 1, total: list.length };
+
+    if (!list || list.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #888;">No hiring requests found.</td></tr>`;
+      document.getElementById("hireReqPaginationInfo").textContent = "Showing page 1 of 1";
+      document.getElementById("hireReqPrevBtn").disabled = true;
+      document.getElementById("hireReqNextBtn").disabled = true;
+      return;
+    }
+
+    tbody.innerHTML = list.map(item => `
+      <tr>
+        <td><strong>${item.requestId}</strong></td>
+        <td>${item.companyName}</td>
+        <td>${item.hrName}</td>
+        <td><a href="tel:${item.mobileNumber}" style="color: #10b981;">${item.mobileNumber}</a></td>
+        <td>${item.email}</td>
+        <td>${item.techDomain}</td>
+        <td><span style="color: ${item.adminStatus === 'hired' ? '#10b981' : (item.adminStatus === 'cancelled' ? '#ef4448' : '#e0a730')}">${item.adminStatus || 'new'}</span></td>
+        <td>
+          <span class="action-badge badge-approve" onclick="updateHireReqStatus('${item.requestId}', 'hired')">Hired</span>
+          <span class="action-badge badge-reject" onclick="updateHireReqStatus('${item.requestId}', 'cancelled')">Cancel</span>
+          <span class="action-badge badge-reject" onclick="deleteHireReq('${item.requestId}')">Delete</span>
+        </td>
+      </tr>
+    `).join("");
+
+    currentHireReqPage = pagination.page;
+    document.getElementById("hireReqPaginationInfo").textContent = `Page ${pagination.page} of ${pagination.totalPages} (${pagination.total} total)`;
+    document.getElementById("hireReqPrevBtn").disabled = pagination.page <= 1;
+    document.getElementById("hireReqNextBtn").disabled = pagination.page >= pagination.totalPages;
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #ef5350;">Failed to load hiring requests: ${err.message}</td></tr>`;
+  }
+};
+
+window.filterHiringRequests = function() { currentHireReqPage = 1; loadHiringRequests(); };
+window.changeHireReqPage = function(delta) { currentHireReqPage += delta; loadHiringRequests(); };
+
+window.updateHireReqStatus = async function(requestId, status) {
+  if (!await confirm(`Update status of request ${requestId} to ${status}?`)) return;
+  try {
+    const res = await adminFetch(`/api/admin/hiring-requests/${requestId}/status`, {
+      method: "PATCH",
+      body: JSON.stringify({ status })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Failed to update status");
+    showToast("Success", "Status updated successfully", false);
+    loadHiringRequests();
+  } catch (err) {
+    showToast("Error", err.message, true);
+  }
+};
+
+window.deleteHireReq = async function(requestId) {
+  if (!await confirm(`Are you sure you want to delete hiring request ${requestId}?`)) return;
+  try {
+    const res = await adminFetch(`/api/admin/hiring-requests/${requestId}`, { method: "DELETE" });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Failed to delete");
+    showToast("Success", "Hiring request deleted", false);
+    loadHiringRequests();
+  } catch (err) {
+    showToast("Error", err.message, true);
   }
 };
 

@@ -143,6 +143,40 @@ const Enquiries = {
   },
 };
 
+/* ── Seminars ── */
+const Seminars = {
+  async list({ page = 1, limit = 10, search = "", status = "" } = {}) {
+    const q = new URLSearchParams({ page, limit, search, status }).toString();
+    return request(`/api/admin/seminars?${q}`);
+  },
+  async updateStatus(bookingId, status, comment) {
+    return request(`/api/admin/seminars/${bookingId}/status`, {
+      method: "PATCH",
+      body: JSON.stringify({ status, comment }),
+    });
+  },
+  async remove(bookingId) {
+    return request(`/api/admin/seminars/${bookingId}`, { method: "DELETE" });
+  },
+};
+
+/* ── Hiring Requests ── */
+const HiringRequests = {
+  async list({ page = 1, limit = 10, search = "", status = "" } = {}) {
+    const q = new URLSearchParams({ page, limit, search, status }).toString();
+    return request(`/api/admin/hiring-requests?${q}`);
+  },
+  async updateStatus(requestId, status, comment) {
+    return request(`/api/admin/hiring-requests/${requestId}/status`, {
+      method: "PATCH",
+      body: JSON.stringify({ status, comment }),
+    });
+  },
+  async remove(requestId) {
+    return request(`/api/admin/hiring-requests/${requestId}`, { method: "DELETE" });
+  },
+};
+
 /* ── Legacy Import ── */
 const Legacy = {
   /**
@@ -158,7 +192,7 @@ const Legacy = {
 };
 
 /* ── Public API refs ── */
-const API = { Auth, Applications, Certificates, Enquiries, Legacy, BASE_URL };
+const API = { Auth, Applications, Certificates, Enquiries, Seminars, HiringRequests, Legacy, BASE_URL };
 
 // expose globally
 window.API = API;
