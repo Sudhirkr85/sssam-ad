@@ -75,7 +75,7 @@ window.resolveCustomDialog = function(val) {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
-  const token = localStorage.getItem("adminToken");
+  const token = localStorage.getItem("adminToken") || sessionStorage.getItem("sssam_admin_token");
   if (token) {
     showDashboard();
   }
@@ -151,7 +151,7 @@ function showDashboard() {
 }
 
 async function adminFetch(url, options = {}) {
-  const token = localStorage.getItem("adminToken");
+  const token = localStorage.getItem("adminToken") || sessionStorage.getItem("sssam_admin_token");
   const headers = Object.assign({
     "Authorization": `Bearer ${token}`,
     "Content-Type": "application/json"

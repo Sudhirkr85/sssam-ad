@@ -10,14 +10,15 @@ const BASE_URL = isLocalHost ? `${window.location.protocol}//${window.location.h
  * Returns the stored JWT or null.
  */
 function getToken() {
-  return sessionStorage.getItem("sssam_admin_token");
+  return localStorage.getItem("adminToken") || sessionStorage.getItem("sssam_admin_token") || localStorage.getItem("sssam_admin_token");
 }
 
 /**
- * Saves auth token to session storage.
+ * Saves auth token to storage.
  * @param {string} token
  */
 function saveToken(token) {
+  localStorage.setItem("adminToken", token);
   sessionStorage.setItem("sssam_admin_token", token);
 }
 
@@ -25,6 +26,7 @@ function saveToken(token) {
  * Clears auth state.
  */
 function clearToken() {
+  localStorage.removeItem("adminToken");
   sessionStorage.removeItem("sssam_admin_token");
 }
 

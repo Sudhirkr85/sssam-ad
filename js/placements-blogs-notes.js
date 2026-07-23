@@ -41,7 +41,7 @@ if (document.readyState === "loading") {
 
 // Helper for JWT Auth API calls
 async function s3AdminFetch(url, options = {}) {
-  const token = localStorage.getItem("adminToken");
+  const token = localStorage.getItem("adminToken") || sessionStorage.getItem("sssam_admin_token");
   const headers = Object.assign({
     "Authorization": `Bearer ${token}`
   }, options.headers);
