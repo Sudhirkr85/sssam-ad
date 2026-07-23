@@ -27,6 +27,7 @@ window.togglePlacementStatus = togglePlacementStatus;
 window.loadBlogs = loadBlogs;
 window.loadHiring = loadHiring;
 window.toggleBlogStatus = toggleBlogStatus;
+window.toggleBlogPublishStatus = toggleBlogPublishStatus;
 window.loadNotes = loadNotes;
 window.toggleNoteStatus = toggleNoteStatus;
 window.loadGallery = loadGallery;
@@ -190,7 +191,7 @@ async function loadBlogs() {
         <td><strong>${item.title}</strong><br/><small style="color: #666;">/${item.slug}</small></td>
         <td>${(item.tags || []).slice(0,3).map(t => `<span class="action-badge" style="background:rgba(59,130,246,0.12);color:#3b82f6;width:auto;padding:2px 8px;margin:2px;">${t}</span>`).join("") || '<span style="color:#555;">—</span>'}</td>
         <td>${item.author}</td>
-        <td><span style="color: ${item.status === 'Published' ? '#10b981' : '#e0a730'}; font-weight: 600;">${item.status}</span></td>
+        <td><span class="action-badge" style="background:${item.status === 'Published' ? 'rgba(16,185,129,0.15)' : 'rgba(224,167,48,0.15)'}; color:${item.status === 'Published' ? '#10b981' : '#e0a730'}; border:1px solid ${item.status === 'Published' ? 'rgba(16,185,129,0.3)' : 'rgba(224,167,48,0.3)'}; cursor:pointer;" onclick="toggleBlogPublishStatus('${item._id}', '${item.status}')">${item.status}</span></td>
         <td>
           <label class="switch-container">
             <input type="checkbox" ${item.active ? 'checked' : ''} onchange="toggleBlogStatus('${item._id}', this.checked)" />
@@ -236,7 +237,7 @@ async function loadHiring() {
           <td><strong>${item.title}</strong><br/><small style="color:#666;">/${item.slug}</small></td>
           <td>${sourceBadge}</td>
           <td>${company}</td>
-          <td><span style="color: ${item.status === 'Published' ? '#10b981' : '#e0a730'}; font-weight: 600;">${item.status}</span></td>
+          <td><span class="action-badge" style="background:${item.status === 'Published' ? 'rgba(16,185,129,0.15)' : 'rgba(224,167,48,0.15)'}; color:${item.status === 'Published' ? '#10b981' : '#e0a730'}; border:1px solid ${item.status === 'Published' ? 'rgba(16,185,129,0.3)' : 'rgba(224,167,48,0.3)'}; cursor:pointer;" onclick="toggleBlogPublishStatus('${item._id}', '${item.status}')">${item.status}</span></td>
           <td>
             <label class="switch-container">
               <input type="checkbox" ${item.active ? 'checked' : ''} onchange="toggleBlogStatus('${item._id}', this.checked)" />
@@ -260,6 +261,7 @@ window.openAddBlogModal = function(type = "Blog") {
   document.getElementById("blogId").value = "";
   document.getElementById("blogImageInfo").textContent = "";
   document.getElementById("blogType").value = type;
+  document.getElementById("blogStatus").value = "Published";
 
   const isHiring = type === "Hiring";
 
@@ -601,6 +603,20 @@ async function toggleBlogStatus(id, checked) {
     showToast("Success", "Publication visibility toggled.", false);
     loadBlogs();
     // Also refresh hiring if that panel exists
+}
+
+async function toggleBlogPublishStatus(id, currentStatus) {
+  const newStatus = currentStatus === "Published" ? "Draft" : "Published";
+  try {
+    const formData = new FormData();
+    formData.append("status", newStatus);
+    const res = await s3AdminFetch(`/api/admin/blogs/${id}`, {
+      method: "PUT",
+      body: formData
+    });
+    if (!res.ok) throw new Error("Status update failed");
+    showToast("Success", `Post publication status updated to ${newStatus}.`, false);
+    loadBlogs();
     if (document.getElementById("hiringTableBody")) loadHiring();
   } catch (e) {
     showToast("Error", e.message, true);

@@ -1,6 +1,5 @@
-// Change base URL as needed to hook to Express backend port
-window.APP_BASE_URL = "https://sssam-be.onrender.com";
-// window.APP_BASE_URL = "http://localhost:5000";
+const isLocalAdmin = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+window.APP_BASE_URL = isLocalAdmin ? `${window.location.protocol}//${window.location.hostname}:5000` : "https://sssam-be.onrender.com";
 
 // Override native confirm and prompt with beautiful, centered custom modals
 let dialogResolver = null;
