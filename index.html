@@ -401,9 +401,9 @@
         
         <!-- PANEL: PLACEMENTS -->
         <section class="admin-panel-content" id="panel-placements" style="display: none;">
-          <div class="flex justify-between items-center mb-5">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5 gap-3">
             <p class="text-[#888]">Manage student placements, package details, and company listings.</p>
-            <button class="bg-[#e0a730] text-[#111] border-none py-[11px] px-[22px] rounded-lg font-bold hover:bg-[#c99324] hover:shadow-[0_4px_15px_rgba(224,167,48,0.2)] transition-all light:bg-[#204180] light:text-white light:hover:bg-[#173266] light:hover:shadow-[0_4px_15px_rgba(32,65,128,0.2)]" onclick="openAddPlacementModal()">+ Add Placement</button>
+            <button class="w-full sm:w-auto shrink-0 bg-[#e0a730] text-[#111] border-none py-[11px] px-[22px] rounded-lg font-bold hover:bg-[#c99324] hover:shadow-[0_4px_15px_rgba(224,167,48,0.2)] transition-all light:bg-[#204180] light:text-white light:hover:bg-[#173266] light:hover:shadow-[0_4px_15px_rgba(32,65,128,0.2)]" onclick="openAddPlacementModal()">+ Add Placement</button>
           </div>
           <div class="overflow-x-auto w-full">
             <table class="w-full border-collapse mt-5 bg-[rgba(255,255,255,0.01)] rounded-xl overflow-hidden min-w-[750px]">
@@ -483,11 +483,11 @@
 
         <!-- PANEL: NOTES -->
         <section class="admin-panel-content" id="panel-notes" style="display: none;">
-          <div class="flex justify-between items-center mb-5">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5 gap-3">
             <p class="text-[#888]">Manage study materials, PDFs, slides, and view download leads.</p>
-            <div class="flex gap-2.5">
-              <button class="bg-[rgba(255,255,255,0.05)] text-[#d1d5db] border border-[rgba(255,255,255,0.1)] py-2.5 px-[22px] font-semibold rounded-lg hover:bg-[rgba(255,255,255,0.08)] hover:text-white transition-all light:bg-[#f1f5f9] light:text-[#475569] light:border-[rgba(0,0,0,0.06)] light:hover:bg-[#e2e8f0] light:hover:text-[#0f172a]" onclick="openNotesLeadsModal()">📋 View Leads</button>
-              <button class="bg-[#e0a730] text-[#111] border-none py-[11px] px-[22px] rounded-lg font-bold hover:bg-[#c99324] hover:shadow-[0_4px_15px_rgba(224,167,48,0.2)] transition-all light:bg-[#204180] light:text-white light:hover:bg-[#173266] light:hover:shadow-[0_4px_15px_rgba(32,65,128,0.2)]" onclick="openAddNoteModal()">+ Add Study Note</button>
+            <div class="flex gap-2.5 w-full sm:w-auto">
+              <button class="flex-1 sm:flex-none bg-[rgba(255,255,255,0.05)] text-[#d1d5db] border border-[rgba(255,255,255,0.1)] py-2.5 px-[22px] font-semibold rounded-lg hover:bg-[rgba(255,255,255,0.08)] hover:text-white transition-all light:bg-[#f1f5f9] light:text-[#475569] light:border-[rgba(0,0,0,0.06)] light:hover:bg-[#e2e8f0] light:hover:text-[#0f172a]" onclick="openNotesLeadsModal()">📋 View Leads</button>
+              <button class="flex-1 sm:flex-none bg-[#e0a730] text-[#111] border-none py-[11px] px-[22px] rounded-lg font-bold hover:bg-[#c99324] hover:shadow-[0_4px_15px_rgba(224,167,48,0.2)] transition-all light:bg-[#204180] light:text-white light:hover:bg-[#173266] light:hover:shadow-[0_4px_15px_rgba(32,65,128,0.2)]" onclick="openAddNoteModal()">+ Add Study Note</button>
             </div>
           </div>
           <div class="overflow-x-auto w-full">
@@ -512,9 +512,9 @@
 
         <!-- PANEL: GALLERY -->
         <section class="admin-panel-content" id="panel-gallery" style="display: none;">
-          <div class="flex justify-between items-center mb-5">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5 gap-3">
             <p class="text-[#888]">Upload and manage academy gallery images. Shown dynamically on the gallery page.</p>
-            <button class="bg-[#e0a730] text-[#111] border-none py-[11px] px-[22px] rounded-lg font-bold hover:bg-[#c99324] hover:shadow-[0_4px_15px_rgba(224,167,48,0.2)] transition-all light:bg-[#204180] light:text-white light:hover:bg-[#173266] light:hover:shadow-[0_4px_15px_rgba(32,65,128,0.2)]" onclick="openAddGalleryModal()">+ Upload Image</button>
+            <button class="w-full sm:w-auto shrink-0 bg-[#e0a730] text-[#111] border-none py-[11px] px-[22px] rounded-lg font-bold hover:bg-[#c99324] hover:shadow-[0_4px_15px_rgba(224,167,48,0.2)] transition-all light:bg-[#204180] light:text-white light:hover:bg-[#173266] light:hover:shadow-[0_4px_15px_rgba(32,65,128,0.2)]" onclick="openAddGalleryModal()">+ Upload Image</button>
           </div>
           <!-- Gallery Image Grid -->
           <div id="galleryAdminGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
@@ -700,9 +700,9 @@
         <!-- Blog AI Section -->
         <div id="blogAISection" class="bg-[rgba(224,167,48,0.05)] p-[15px] rounded-lg mb-5 border border-[rgba(224,167,48,0.15)]">
           <strong class="text-[#e0a730] block mb-1">🤖 Write with Grok AI</strong>
-          <div class="flex gap-2.5">
+          <div class="flex flex-col sm:flex-row gap-2.5">
             <input type="text" id="aiBlogPrompt" placeholder="Enter topic (e.g., Why Node.js is great for backend)..." class="flex-1 bg-[rgba(0,0,0,0.2)] border border-[rgba(255,255,255,0.1)] p-2.5 rounded-md text-white outline-none" />
-            <button type="button" class="bg-[#e0a730] text-[#111] hover:bg-[#c99324] px-[18px] font-bold rounded-lg transition-all text-[0.9rem] light:bg-[#204180] light:text-white light:hover:bg-[#173266]" id="btnGenerateBlogAI" onclick="generateAIContent()">Generate</button>
+            <button type="button" class="w-full sm:w-auto shrink-0 bg-[#e0a730] text-[#111] hover:bg-[#c99324] px-[18px] py-2.5 font-bold rounded-lg transition-all text-[0.9rem] light:bg-[#204180] light:text-white light:hover:bg-[#173266]" id="btnGenerateBlogAI" onclick="generateAIContent()">✨ Generate</button>
           </div>
           <div class="mt-2.5 flex gap-2 flex-wrap items-center">
             <span class="text-[0.78rem] text-[#888]">Quick topics:</span>
@@ -721,9 +721,9 @@
         <!-- Hiring AI Section -->
         <div id="hiringAISection" class="bg-[rgba(59,130,246,0.05)] p-[15px] rounded-lg mb-5 border border-[rgba(59,130,246,0.15)]" style="display:none;">
           <strong class="text-[#3b82f6] block mb-1">🤖 Generate Job Description with AI</strong>
-          <div class="flex gap-2.5">
+          <div class="flex flex-col sm:flex-row gap-2.5">
             <input type="text" id="aiJobPrompt" placeholder="Enter job role (e.g., Full Stack Developer, Python Trainer...)" class="flex-1 bg-[rgba(0,0,0,0.2)] border border-[rgba(255,255,255,0.1)] p-2.5 rounded-md text-white outline-none" />
-            <button type="button" class="bg-[#3b82f6] text-white hover:bg-[#2563eb] px-[18px] font-bold rounded-lg transition-all text-[0.9rem]" id="btnGenerateJobAI" onclick="generateAIJobContent()">Generate</button>
+            <button type="button" class="w-full sm:w-auto shrink-0 bg-[#3b82f6] text-white hover:bg-[#2563eb] px-[18px] py-2.5 font-bold rounded-lg transition-all text-[0.9rem]" id="btnGenerateJobAI" onclick="generateAIJobContent()">✨ Generate</button>
           </div>
           <div class="mt-2.5 flex gap-2 flex-wrap items-center">
             <span class="text-[0.78rem] text-[#888]">Quick roles:</span>
@@ -839,9 +839,9 @@
         <!-- Study Note AI Section -->
         <div id="noteAISection" class="bg-[rgba(224,167,48,0.05)] p-[15px] rounded-lg mb-5 border border-[rgba(224,167,48,0.15)]">
           <strong class="text-[#e0a730] block mb-1">🤖 Write Note Description with AI</strong>
-          <div class="flex gap-2.5">
+          <div class="flex flex-col sm:flex-row gap-2.5">
             <input type="text" id="aiNotePrompt" placeholder="Enter topic/category (e.g. Python OOPS Concepts, Advanced Excel)..." class="flex-1 bg-[rgba(0,0,0,0.2)] border border-[rgba(255,255,255,0.1)] p-2.5 rounded-md text-white outline-none" />
-            <button type="button" class="bg-[#e0a730] text-[#111] hover:bg-[#c99324] px-[18px] font-bold rounded-lg transition-all text-[0.9rem] light:bg-[#204180] light:text-white light:hover:bg-[#173266]" id="btnGenerateNoteAI" onclick="generateAINoteContent()">Generate</button>
+            <button type="button" class="w-full sm:w-auto shrink-0 bg-[#e0a730] text-[#111] hover:bg-[#c99324] px-[18px] py-2.5 font-bold rounded-lg transition-all text-[0.9rem] light:bg-[#204180] light:text-white light:hover:bg-[#173266]" id="btnGenerateNoteAI" onclick="generateAINoteContent()">✨ Generate</button>
           </div>
           <div class="mt-2.5 flex gap-2 flex-wrap items-center">
             <span class="text-[0.78rem] text-[#888]">Quick notes:</span>
