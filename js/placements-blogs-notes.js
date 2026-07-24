@@ -153,11 +153,10 @@ window.closePlacementModal = function() {
 
 async function togglePlacementStatus(id, checked) {
   try {
-    const formData = new FormData();
-    formData.append("active", checked);
     const res = await s3AdminFetch(`/api/admin/placements/${id}`, {
       method: "PUT",
-      body: formData
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ active: checked })
     });
     if (!res.ok) throw new Error("Status update failed");
     showToast("Success", "Placement status updated successfully", false);
@@ -601,26 +600,27 @@ Format it cleanly in HTML using <h3>, <ul>, <li>, <p> tags. Keep it concise and 
 
 async function toggleBlogStatus(id, checked) {
   try {
-    const formData = new FormData();
-    formData.append("active", checked);
     const res = await s3AdminFetch(`/api/admin/blogs/${id}`, {
       method: "PUT",
-      body: formData
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ active: checked })
     });
     if (!res.ok) throw new Error("Status update failed");
     showToast("Success", "Publication visibility toggled.", false);
     loadBlogs();
-    // Also refresh hiring if that panel exists
+    if (document.getElementById("hiringTableBody")) loadHiring();
+  } catch (e) {
+    showToast("Error", e.message, true);
+  }
 }
 
 async function toggleBlogPublishStatus(id, currentStatus) {
   const newStatus = currentStatus === "Published" ? "Draft" : "Published";
   try {
-    const formData = new FormData();
-    formData.append("status", newStatus);
     const res = await s3AdminFetch(`/api/admin/blogs/${id}`, {
       method: "PUT",
-      body: formData
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: newStatus })
     });
     if (!res.ok) throw new Error("Status update failed");
     showToast("Success", `Post publication status updated to ${newStatus}.`, false);
@@ -773,11 +773,10 @@ window.closeNoteModal = function() {
 
 async function toggleNoteStatus(id, checked) {
   try {
-    const formData = new FormData();
-    formData.append("active", checked);
     const res = await s3AdminFetch(`/api/admin/notes/${id}`, {
       method: "PUT",
-      body: formData
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ active: checked })
     });
     if (!res.ok) throw new Error("Status update failed");
     showToast("Success", "Visibility toggled successfully.", false);
@@ -1107,9 +1106,11 @@ window.closeGalleryModal = function() {
 
 async function toggleGalleryStatus(id, checked) {
   try {
-    const formData = new FormData();
-    formData.append("active", checked);
-    const res = await s3AdminFetch(`/api/admin/gallery/${id}`, { method: "PUT", body: formData });
+    const res = await s3AdminFetch(`/api/admin/gallery/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ active: checked })
+    });
     if (!res.ok) throw new Error("Status update failed");
     showToast("Success", "Gallery visibility updated", false);
     loadGallery();
