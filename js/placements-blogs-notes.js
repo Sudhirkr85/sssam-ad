@@ -59,6 +59,14 @@ async function s3AdminFetch(url, options = {}) {
   return res;
 }
 
+// Helper to fix relative storage URLs (e.g., /uploads/...)
+function fixMediaUrl(url) {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://')) return url;
+  const baseUrl = (window.APP_BASE_URL || "").replace(/\/+$/, "");
+  return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
+}
+
 // -------------------------------------------------------------------------
 // 1. PLACEMENTS CONTROL
 // -------------------------------------------------------------------------
@@ -79,19 +87,19 @@ async function loadPlacements() {
       <tr>
         <td>
           <div style="display: flex; align-items: center; gap: 10px;">
-            <img src="${item.photoUrl}" alt="${item.studentName}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.1);" />
+            <img src="${fixMediaUrl(item.photoUrl)}" alt="${item.studentName}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.1);" />
             <strong>${item.studentName}</strong>
           </div>
         </td>
         <td>
           <div style="display: flex; align-items: center; gap: 6px;">
-            ${item.companyLogoUrl ? `<img src="${item.companyLogoUrl}" alt="${item.companyName}" style="height: 20px; max-width: 60px; object-fit: contain;" />` : ''}
+            ${item.companyLogoUrl ? `<img src="${fixMediaUrl(item.companyLogoUrl)}" alt="${item.companyName}" style="height: 20px; max-width: 60px; object-fit: contain;" />` : ''}
             <span>${item.companyName}</span>
           </div>
         </td>
-        <td>${item.packageLPA} LPA</td>
+        <td>${item.packageLPA ? item.packageLPA + ' LPA' : '—'}</td>
         <td>${item.designation}</td>
-        <td>${item.placedYear}</td>
+        <td>${item.placedYear || '—'}</td>
         <td>
           <label class="switch-container" style="display: inline-block; cursor: pointer;">
             <input type="checkbox" ${item.active ? 'checked' : ''} onchange="togglePlacementStatus('${item._id}', this.checked)" style="cursor: pointer;" />
@@ -654,7 +662,7 @@ async function loadNotes() {
 
     tbody.innerHTML = list.map(item => `
       <tr>
-        <td><strong>${item.title}</strong><br/><small style="color: #888;"><a href="${item.fileUrl}" target="_blank" style="color: #3b82f6; text-decoration: underline;">Open PDF</a></small></td>
+        <td><strong>${item.title}</strong><br/><small style="color: #888;"><a href="${fixMediaUrl(item.fileUrl)}" target="_blank" style="color: #3b82f6; text-decoration: underline;">Open PDF</a></small></td>
         <td><span class="action-badge" style="background: rgba(16,185,129,0.15); color: #10b981;">${item.category}</span></td>
         <td><strong>${item.downloadCount}</strong> downloads</td>
         <td>
@@ -1042,7 +1050,7 @@ async function loadGallery() {
 
     grid.innerHTML = list.map(item => `
       <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; overflow: hidden; position: relative;">
-        <img src="${item.imageUrl}" alt="${item.altText || item.title}" style="width: 100%; height: 160px; object-fit: cover; display: block;" loading="lazy" />
+        <img src="${fixMediaUrl(item.imageUrl)}" alt="${item.altText || item.title}" style="width: 100%; height: 160px; object-fit: cover; display: block;" loading="lazy" />
         <div style="padding: 10px 12px;">
           <div style="font-size: 0.8rem; font-weight: 700; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${item.title}">${item.title}</div>
           <div style="font-size: 0.72rem; color: #888; margin-top: 2px;">${CATEGORY_LABELS[item.category] || item.category}</div>
@@ -1088,7 +1096,7 @@ window.openEditGalleryModal = function(itemJsonStr) {
   // Show current image preview
   const previewWrap = document.getElementById("galImagePreviewWrap");
   const previewImg = document.getElementById("galImagePreview");
-  previewImg.src = item.imageUrl;
+  previewImg.src = fixMediaUrl(item.imageUrl);
   previewWrap.style.display = "block";
   document.getElementById("galleryModal").style.display = "flex";
 };

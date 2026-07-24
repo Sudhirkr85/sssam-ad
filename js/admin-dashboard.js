@@ -1,5 +1,14 @@
-const isLocalAdmin = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-window.APP_BASE_URL = isLocalAdmin ? `${window.location.protocol}//${window.location.hostname}:5000` : "https://sssam-be.onrender.com";
+const isLocalAdmin = window.location.hostname === 'localhost' || 
+                     window.location.hostname === '127.0.0.1' || 
+                     window.location.protocol === 'file:' || 
+                     window.location.hostname === '' ||
+                     window.location.hostname.startsWith('192.168.') ||
+                     window.location.hostname.startsWith('10.') ||
+                     window.location.hostname.startsWith('172.');
+
+const hostName = (window.location.hostname && window.location.hostname !== '') ? window.location.hostname : 'localhost';
+const protocolStr = window.location.protocol === 'file:' ? 'http:' : window.location.protocol;
+window.APP_BASE_URL = isLocalAdmin ? `${protocolStr}//${hostName}:5000` : "https://sssam-be.onrender.com";
 
 // Override native confirm and prompt with beautiful, centered custom modals
 let dialogResolver = null;
@@ -133,6 +142,11 @@ document.addEventListener("DOMContentLoaded", () => {
       if (panelId === "panel-enquiries") loadEnquiries();
       if (panelId === "panel-seminars") loadSeminars();
       if (panelId === "panel-hiring-requests") loadHiringRequests();
+      if (panelId === "panel-placements" && typeof loadPlacements === "function") loadPlacements();
+      if (panelId === "panel-blogs" && typeof loadBlogs === "function") loadBlogs();
+      if (panelId === "panel-hiring" && typeof loadHiring === "function") loadHiring();
+      if (panelId === "panel-notes" && typeof loadNotes === "function") loadNotes();
+      if (panelId === "panel-gallery" && typeof loadGallery === "function") loadGallery();
       if (panelId === "panel-settings") loadSettings();
 
       // Auto close sidebar on mobile tap
