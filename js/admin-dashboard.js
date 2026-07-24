@@ -1,14 +1,4 @@
-const isLocalAdmin = window.location.hostname === 'localhost' || 
-                     window.location.hostname === '127.0.0.1' || 
-                     window.location.protocol === 'file:' || 
-                     window.location.hostname === '' ||
-                     window.location.hostname.startsWith('192.168.') ||
-                     window.location.hostname.startsWith('10.') ||
-                     window.location.hostname.startsWith('172.');
-
-const hostName = (window.location.hostname && window.location.hostname !== '') ? window.location.hostname : 'localhost';
-const protocolStr = window.location.protocol === 'file:' ? 'http:' : window.location.protocol;
-window.APP_BASE_URL = isLocalAdmin ? `${protocolStr}//${hostName}:5000` : "https://sssam-be.onrender.com";
+window.APP_BASE_URL = "https://sssam-be.onrender.com";
 
 // Override native confirm and prompt with beautiful, centered custom modals
 let dialogResolver = null;
@@ -269,13 +259,17 @@ async function loadApplications() {
       }
       return `
         <tr>
-          <td title="${app.applicationId}"><strong>${displayAppId}</strong></td>
-          <td>${app.fullName}</td>
-          <td title="${app.course || ''}">${displayCourse}</td>
-          <td>${app.certificateType}</td>
-          <td>${app.phoneNumber}</td>
-          <td><span style="color: ${app.status === 'Approved' ? '#10b981' : (app.status === 'Rejected' ? '#ef4448' : '#e0a730')}">${app.status}</span></td>
-          <td>
+          <td data-label="ID & Name" title="${app.applicationId}">
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <strong style="color: #e0a730;">${displayAppId}</strong>
+              <span style="font-weight: 600;">${app.fullName}</span>
+            </div>
+          </td>
+          <td data-label="Course" title="${app.course || ''}">${displayCourse}</td>
+          <td data-label="Type">${app.certificateType}</td>
+          <td data-label="Phone">${app.phoneNumber}</td>
+          <td data-label="Status"><span style="color: ${app.status === 'Approved' ? '#10b981' : (app.status === 'Rejected' ? '#ef4448' : '#e0a730')}">${app.status}</span></td>
+          <td data-label="Actions">
             <span class="action-badge badge-edit" onclick="openEditModal('${encodeURIComponent(JSON.stringify(app))}')">Edit</span>
             ${app.status === "Pending" ? `
               <span class="action-badge badge-approve" onclick="approveApp('${app.applicationId}')">Approve</span>
@@ -373,12 +367,16 @@ async function loadCertificates() {
       const displayCourse = cert.course && cert.course.length > 25 ? cert.course.substring(0, 25) + "..." : (cert.course || "");
       return `
         <tr>
-          <td title="${cert.certificateNumber}"><strong>${displayCertNo}</strong></td>
-          <td>${cert.fullName}</td>
-          <td title="${cert.course || ''}">${displayCourse}</td>
-          <td>${new Date(cert.issueDate).toLocaleDateString()}</td>
-          <td><span style="color: #10b981;">${cert.status || 'Active'}</span></td>
-          <td>
+          <td data-label="Cert No & Name" title="${cert.certificateNumber}">
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <strong style="color: #e0a730;">${displayCertNo}</strong>
+              <span style="font-weight: 600;">${cert.fullName}</span>
+            </div>
+          </td>
+          <td data-label="Course" title="${cert.course || ''}">${displayCourse}</td>
+          <td data-label="Issue Date">${new Date(cert.issueDate).toLocaleDateString()}</td>
+          <td data-label="Status"><span style="color: #10b981;">${cert.status || 'Active'}</span></td>
+          <td data-label="Actions">
             <span class="action-badge badge-edit" onclick="openEditModal('${encodeURIComponent(JSON.stringify(appPayload))}')">Edit</span>
           </td>
         </tr>
@@ -423,12 +421,12 @@ async function loadEnquiries() {
       
       return `
         <tr>
-          <td><strong>${e.fullName || e.name || 'N/A'}</strong></td>
-          <td><span style="color: #e0a730; font-weight: 600;">${courseText}</span></td>
-          <td>${e.phoneNumber || e.phone || 'N/A'}</td>
-          <td>${e.email || '-'}</td>
-          <td><small style="color: #aaa;">${dateText}</small></td>
-          <td>
+          <td data-label="Name"><strong>${e.fullName || e.name || 'N/A'}</strong></td>
+          <td data-label="Course"><span style="color: #e0a730; font-weight: 600;">${courseText}</span></td>
+          <td data-label="Phone">${e.phoneNumber || e.phone || 'N/A'}</td>
+          <td data-label="Email">${e.email || '-'}</td>
+          <td data-label="Date"><small style="color: #aaa;">${dateText}</small></td>
+          <td data-label="Actions">
             <span class="action-badge badge-reject" style="cursor: pointer; padding: 4px 8px; border-radius: 4px; display: inline-block; margin-right: 5px;" onclick="deleteEnquiry('${e._id || e.id || e.enquiryId}')">Delete</span>
           </td>
         </tr>
@@ -746,13 +744,17 @@ window.loadSeminars = async function() {
 
     tbody.innerHTML = list.map(item => `
       <tr>
-        <td><strong>${item.bookingId}</strong></td>
-        <td>${item.collegeName}</td>
-        <td>${item.coordinatorName}</td>
-        <td><a href="tel:${item.mobileNumber}" style="color: #10b981;">${item.mobileNumber}</a></td>
-        <td>${item.topic}</td>
-        <td><span style="color: ${item.adminStatus === 'scheduled' ? '#10b981' : (item.adminStatus === 'cancelled' ? '#ef4448' : '#e0a730')}">${item.adminStatus || 'new'}</span></td>
-        <td>
+        <td data-label="ID & College">
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <strong style="color: #e0a730;">${item.bookingId}</strong>
+            <span style="font-weight: 600;">${item.collegeName}</span>
+          </div>
+        </td>
+        <td data-label="Coordinator">${item.coordinatorName}</td>
+        <td data-label="Mobile"><a href="tel:${item.mobileNumber}" style="color: #10b981;">${item.mobileNumber}</a></td>
+        <td data-label="Topic">${item.topic}</td>
+        <td data-label="Status"><span style="color: ${item.adminStatus === 'scheduled' ? '#10b981' : (item.adminStatus === 'cancelled' ? '#ef4448' : '#e0a730')}">${item.adminStatus || 'new'}</span></td>
+        <td data-label="Actions">
           <span class="action-badge badge-approve" onclick="updateSemStatus('${item.bookingId}', 'scheduled')">Schedule</span>
           <span class="action-badge badge-reject" onclick="updateSemStatus('${item.bookingId}', 'cancelled')">Cancel</span>
           <span class="action-badge badge-reject" onclick="deleteSemBooking('${item.bookingId}')">Delete</span>
@@ -829,14 +831,18 @@ window.loadHiringRequests = async function() {
 
     tbody.innerHTML = list.map(item => `
       <tr>
-        <td><strong>${item.requestId}</strong></td>
-        <td>${item.companyName}</td>
-        <td>${item.hrName}</td>
-        <td><a href="tel:${item.mobileNumber}" style="color: #10b981;">${item.mobileNumber}</a></td>
-        <td>${item.email}</td>
-        <td>${item.techDomain}</td>
-        <td><span style="color: ${item.adminStatus === 'hired' ? '#10b981' : (item.adminStatus === 'cancelled' ? '#ef4448' : '#e0a730')}">${item.adminStatus || 'new'}</span></td>
-        <td>
+        <td data-label="ID & Company">
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <strong style="color: #e0a730;">${item.requestId}</strong>
+            <span style="font-weight: 600;">${item.companyName}</span>
+          </div>
+        </td>
+        <td data-label="HR Name">${item.hrName}</td>
+        <td data-label="Mobile"><a href="tel:${item.mobileNumber}" style="color: #10b981;">${item.mobileNumber}</a></td>
+        <td data-label="Email">${item.email}</td>
+        <td data-label="Domain">${item.techDomain}</td>
+        <td data-label="Status"><span style="color: ${item.adminStatus === 'hired' ? '#10b981' : (item.adminStatus === 'cancelled' ? '#ef4448' : '#e0a730')}">${item.adminStatus || 'new'}</span></td>
+        <td data-label="Actions">
           <span class="action-badge badge-approve" onclick="updateHireReqStatus('${item.requestId}', 'hired')">Hired</span>
           <span class="action-badge badge-reject" onclick="updateHireReqStatus('${item.requestId}', 'cancelled')">Cancel</span>
           <span class="action-badge badge-reject" onclick="deleteHireReq('${item.requestId}')">Delete</span>
@@ -884,4 +890,15 @@ window.deleteHireReq = async function(requestId) {
     showToast("Error", err.message, true);
   }
 };
+
+// Accordion Expand/Collapse Toggle on Mobile
+document.addEventListener("click", function(e) {
+  if (window.innerWidth < 768) {
+    const tr = e.target.closest(".responsive-table tr");
+    if (tr) {
+      if (e.target.closest("input, select, button, a, .action-badge, .switch-container")) return;
+      tr.classList.toggle("expanded");
+    }
+  }
+});
 

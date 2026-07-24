@@ -85,28 +85,28 @@ async function loadPlacements() {
 
     tbody.innerHTML = list.map(item => `
       <tr>
-        <td>
+        <td data-label="Student">
           <div style="display: flex; align-items: center; gap: 10px;">
-            <img src="${fixMediaUrl(item.photoUrl)}" alt="${item.studentName}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.1);" />
+            <img src="${fixMediaUrl(item.photoUrl)}" alt="${item.studentName}" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.1);" />
             <strong>${item.studentName}</strong>
           </div>
         </td>
-        <td>
+        <td data-label="Company">
           <div style="display: flex; align-items: center; gap: 6px;">
-            ${item.companyLogoUrl ? `<img src="${fixMediaUrl(item.companyLogoUrl)}" alt="${item.companyName}" style="height: 20px; max-width: 60px; object-fit: contain;" />` : ''}
+            ${item.companyLogoUrl ? `<img src="${fixMediaUrl(item.companyLogoUrl)}" alt="${item.companyName}" style="height: 18px; max-width: 50px; object-fit: contain;" />` : ''}
             <span>${item.companyName}</span>
           </div>
         </td>
-        <td>${item.packageLPA ? item.packageLPA + ' LPA' : '—'}</td>
-        <td>${item.designation}</td>
-        <td>${item.placedYear || '—'}</td>
-        <td>
+        <td data-label="Package">${item.packageLPA ? item.packageLPA + ' LPA' : '—'}</td>
+        <td data-label="Designation">${item.designation}</td>
+        <td data-label="Year">${item.placedYear || '—'}</td>
+        <td data-label="Visibility">
           <label class="switch-container" style="display: inline-block; cursor: pointer;">
             <input type="checkbox" ${item.active ? 'checked' : ''} onchange="togglePlacementStatus('${item._id}', this.checked)" style="cursor: pointer;" />
             <span style="font-size: 0.8rem; margin-left: 5px; color: ${item.active ? '#10b981' : '#888'};">${item.active ? 'Visible' : 'Hidden'}</span>
           </label>
         </td>
-        <td>
+        <td data-label="Actions">
           <span class="action-badge badge-edit" onclick="openEditPlacementModal('${encodeURIComponent(JSON.stringify(item))}')">Edit</span>
           <span class="action-badge badge-reject" onclick="deletePlacement('${item._id}')">Delete</span>
         </td>
@@ -195,17 +195,17 @@ async function loadBlogs() {
 
     tbody.innerHTML = blogs.map((item, index) => `
       <tr>
-        <td><strong>${item.title}</strong><br/><small style="color: #666;">/${item.slug}</small></td>
-        <td>${(item.tags || []).slice(0,3).map(t => `<span class="action-badge" style="background:rgba(59,130,246,0.12);color:#3b82f6;width:auto;padding:2px 8px;margin:2px;">${t}</span>`).join("") || '<span style="color:#555;">—</span>'}</td>
-        <td>${item.author}</td>
-        <td><span class="action-badge" style="background:${item.status === 'Published' ? 'rgba(16,185,129,0.15)' : 'rgba(224,167,48,0.15)'}; color:${item.status === 'Published' ? '#10b981' : '#e0a730'}; border:1px solid ${item.status === 'Published' ? 'rgba(16,185,129,0.3)' : 'rgba(224,167,48,0.3)'}; cursor:pointer;" onclick="toggleBlogPublishStatus('${item._id}', '${item.status}')">${item.status}</span></td>
-        <td>
+        <td data-label="Title"><strong>${item.title}</strong><br/><small style="color: #666;">/${item.slug}</small></td>
+        <td data-label="Tags">${(item.tags || []).slice(0,3).map(t => `<span class="action-badge" style="background:rgba(59,130,246,0.12);color:#3b82f6;width:auto;padding:2px 8px;margin:2px;">${t}</span>`).join("") || '<span style="color:#555;">—</span>'}</td>
+        <td data-label="Author">${item.author}</td>
+        <td data-label="Status"><span class="action-badge" style="background:${item.status === 'Published' ? 'rgba(16,185,129,0.15)' : 'rgba(224,167,48,0.15)'}; color:${item.status === 'Published' ? '#10b981' : '#e0a730'}; border:1px solid ${item.status === 'Published' ? 'rgba(16,185,129,0.3)' : 'rgba(224,167,48,0.3)'}; cursor:pointer;" onclick="toggleBlogPublishStatus('${item._id}', '${item.status}')">${item.status}</span></td>
+        <td data-label="Visibility">
           <label class="switch-container">
             <input type="checkbox" ${item.active ? 'checked' : ''} onchange="toggleBlogStatus('${item._id}', this.checked)" />
             <span style="font-size: 0.8rem; margin-left: 5px; color: ${item.active ? '#10b981' : '#888'};">${item.active ? 'Visible' : 'Hidden'}</span>
           </label>
         </td>
-        <td>
+        <td data-label="Actions">
           <span class="action-badge badge-edit" onclick="window.triggerBlogEdit(${index}, 'Blog')">Edit</span>
           <span class="action-badge badge-reject" onclick="deleteBlog('${item._id}')">Delete</span>
         </td>
@@ -241,17 +241,17 @@ async function loadHiring() {
       const company = source === "own" ? "SSSAM Academy" : (item.hiringDetails?.company || "—");
       return `
         <tr>
-          <td><strong>${item.title}</strong><br/><small style="color:#666;">/${item.slug}</small></td>
-          <td>${sourceBadge}</td>
-          <td>${company}</td>
-          <td><span class="action-badge" style="background:${item.status === 'Published' ? 'rgba(16,185,129,0.15)' : 'rgba(224,167,48,0.15)'}; color:${item.status === 'Published' ? '#10b981' : '#e0a730'}; border:1px solid ${item.status === 'Published' ? 'rgba(16,185,129,0.3)' : 'rgba(224,167,48,0.3)'}; cursor:pointer;" onclick="toggleBlogPublishStatus('${item._id}', '${item.status}')">${item.status}</span></td>
-          <td>
+          <td data-label="Title"><strong>${item.title}</strong><br/><small style="color:#666;">/${item.slug}</small></td>
+          <td data-label="Source">${sourceBadge}</td>
+          <td data-label="Company">${company}</td>
+          <td data-label="Status"><span class="action-badge" style="background:${item.status === 'Published' ? 'rgba(16,185,129,0.15)' : 'rgba(224,167,48,0.15)'}; color:${item.status === 'Published' ? '#10b981' : '#e0a730'}; border:1px solid ${item.status === 'Published' ? 'rgba(16,185,129,0.3)' : 'rgba(224,167,48,0.3)'}; cursor:pointer;" onclick="toggleBlogPublishStatus('${item._id}', '${item.status}')">${item.status}</span></td>
+          <td data-label="Visibility">
             <label class="switch-container">
               <input type="checkbox" ${item.active ? 'checked' : ''} onchange="toggleBlogStatus('${item._id}', this.checked)" />
               <span style="font-size: 0.8rem; margin-left: 5px; color: ${item.active ? '#10b981' : '#888'};">${item.active ? 'Visible' : 'Hidden'}</span>
             </label>
           </td>
-          <td>
+          <td data-label="Actions">
             <span class="action-badge badge-edit" onclick="window.triggerBlogEdit(${index}, 'Hiring')">Edit</span>
             <span class="action-badge badge-reject" onclick="deleteBlog('${item._id}')">Delete</span>
           </td>
@@ -662,16 +662,16 @@ async function loadNotes() {
 
     tbody.innerHTML = list.map(item => `
       <tr>
-        <td><strong>${item.title}</strong><br/><small style="color: #888;"><a href="${fixMediaUrl(item.fileUrl)}" target="_blank" style="color: #3b82f6; text-decoration: underline;">Open PDF</a></small></td>
-        <td><span class="action-badge" style="background: rgba(16,185,129,0.15); color: #10b981;">${item.category}</span></td>
-        <td><strong>${item.downloadCount}</strong> downloads</td>
-        <td>
+        <td data-label="Title"><strong>${item.title}</strong><br/><small style="color: #888;"><a href="${fixMediaUrl(item.fileUrl)}" target="_blank" style="color: #3b82f6; text-decoration: underline;">Open PDF</a></small></td>
+        <td data-label="Category"><span class="action-badge" style="background: rgba(16,185,129,0.15); color: #10b981;">${item.category}</span></td>
+        <td data-label="Downloads"><strong>${item.downloadCount}</strong> downloads</td>
+        <td data-label="Visibility">
           <label class="switch-container">
             <input type="checkbox" ${item.active ? 'checked' : ''} onchange="toggleNoteStatus('${item._id}', this.checked)" />
             <span style="font-size: 0.8rem; margin-left: 5px; color: ${item.active ? '#10b981' : '#888'};">${item.active ? 'Visible' : 'Hidden'}</span>
           </label>
         </td>
-        <td>
+        <td data-label="Actions">
           <span class="action-badge badge-edit" onclick="openEditNoteModal('${encodeURIComponent(JSON.stringify(item))}')">Edit</span>
           <span class="action-badge badge-reject" onclick="deleteNote('${item._id}')">Delete</span>
         </td>

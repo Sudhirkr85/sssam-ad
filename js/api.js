@@ -3,8 +3,7 @@
    Central HTTP client — all requests go through here.
    ========================================================== */
 
-const isLocalHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-const BASE_URL = isLocalHost ? `${window.location.protocol}//${window.location.hostname}:5000` : "https://sssam-be.onrender.com";
+const BASE_URL = "https://sssam-be.onrender.com";
 
 /**
  * Returns the stored JWT or null.
