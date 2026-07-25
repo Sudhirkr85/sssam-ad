@@ -1,4 +1,4 @@
-window.APP_BASE_URL = "https://sssam-be.onrender.com";
+window.APP_BASE_URL = "https://api.sssamacademy.com";
 
 // Override native confirm and prompt with beautiful, centered custom modals
 let dialogResolver = null;
