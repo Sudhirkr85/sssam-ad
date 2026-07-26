@@ -461,7 +461,27 @@ window.generateAIContent = async function() {
       summary = "AI Generated Technical Blog Post.";
     }
 
-    document.getElementById("blogTitle").value = title;
+    function toTitleCase(str) {
+      if (!str) return "";
+      const minorWords = new Set(["a", "an", "the", "and", "but", "or", "for", "nor", "on", "at", "to", "from", "by", "of", "in", "with", "vs"]);
+      const acronyms = new Set(["it", "ai", "ml", "ui", "ux", "js", "html", "css", "sql", "aws", "seo", "smm", "sem", "qa", "api", "rest", "dca", "adca", "ccna", "ccnp", "sap", "mis", "2026", "2025", "b2b"]);
+
+      return str.split(/(\s+|-|:)/).map((word, index, arr) => {
+        const clean = word.trim();
+        if (!clean || word === "-" || word === ":" || /^\s+$/.test(word)) return word;
+        const lower = clean.toLowerCase().replace(/[^a-z0-9]/g, "");
+        if (!lower) return word;
+        if (acronyms.has(lower)) return word.toUpperCase();
+        const isFirst = index === 0;
+        const isAfterColon = index >= 2 && arr[index - 2] === ":";
+        if (isFirst || isAfterColon || !minorWords.has(lower)) {
+          return clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase();
+        }
+        return clean.toLowerCase();
+      }).join("");
+    }
+
+    document.getElementById("blogTitle").value = toTitleCase(title);
     document.getElementById("blogSummary").value = summary;
     document.getElementById("blogContent").value = content;
     if (tags && Array.isArray(tags)) {
