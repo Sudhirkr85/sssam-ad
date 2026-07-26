@@ -466,6 +466,8 @@ window.generateAIContent = async function() {
     document.getElementById("blogContent").value = content;
     if (tags && Array.isArray(tags)) {
       document.getElementById("blogTags").value = tags.join(", ");
+    } else if (tags && typeof tags === "string") {
+      document.getElementById("blogTags").value = tags;
     }
     
     // Auto-generate slug
